@@ -1,0 +1,451 @@
+{
+  "meta": {
+    "document": "中国银河证券星耀数智 AmazingData 开发手册",
+    "sdk_version": "V1.0.20",
+    "python_sdk_version": "V1.0.20",
+    "last_updated": "2025-12-16",
+    "description": "中国银河证券金融数据SDK，提供行情数据、财务数据、股东数据等查询和实时订阅功能",
+    "python_version": "Python 3.8 - 3.13",
+    "platforms": [
+      "Linux",
+      "Windows"
+    ]
+  },
+  "installation": {
+    "tgw": "pip install tgw-1.7.1-py3-none-any.whl",
+    "amazingdata": "pip install AmazingData-1.0.0-cp312-none-any.whl"
+  },
+  "quick_start": {
+    "query_pattern": [
+      "import AmazingData as ad",
+      "ad.login(username='username', password='password', host='ip', port=port_number)",
+      "obj = ad.ClassName()",
+      "result = obj.method_name(params...)"
+    ],
+    "subscribe_pattern": [
+      "import AmazingData as ad",
+      "ad.login(username='username', password='password', host='ip', port=port_number)",
+      "sub_data = ad.SubscribeData()",
+      "@sub_data.register(code_list=codes, period=ad.constant.Period.snapshot.value)",
+      "def callback(data, period): print(data)",
+      "sub_data.run()"
+    ]
+  },
+  "classes": {
+    "Auth": {
+      "description": "基础认证接口（模块级函数）",
+      "methods": {
+        "login": {
+          "description": "API登录，所有数据接口调用前必须先登录",
+          "doc_note": "PDF原文档参数表写ip+host，但所有代码示例均用host+port，此处以代码示例为准",
+          "parameters": {
+            "username": {
+              "type": "str",
+              "required": true,
+              "description": "账号"
+            },
+            "password": {
+              "type": "str",
+              "required": true,
+              "description": "密码"
+            },
+            "host": {
+              "type": "str",
+              "required": true,
+              "description": "服务器IP"
+            },
+            "port": {
+              "type": "int",
+              "required": true,
+              "description": "服务器端口号"
+            }
+          }
+        },
+        "logout": {
+          "description": "API退出登录（正常使用无需调用）",
+          "parameters": {
+            "username": {
+              "type": "str",
+              "required": true,
+              "description": "用户名"
+            }
+          }
+        },
+        "update_password": {
+          "description": "更新密码（必须先登录）",
+          "parameters": {
+            "username": {
+              "type": "str",
+              "required": true,
+              "description": "用户名"
+            },
+            "old_password": {
+              "type": "str",
+              "required": true,
+              "description": "旧密码"
+            },
+            "new_password": {
+              "type": "str",
+              "required": true,
+              "description": "新密码"
+            }
+          }
+        }
+      }
+    },
+    "BaseData": {
+      "description": "基础数据查询类，提供代码表、证券信息、交易日历、复权因子等基础数据",
+      "methods": {
+        "get_code_info": {
+          "description": "获取每日最新证券信息，交易日早上9点前更新当日最新",
+          "parameters": {
+            "security_type": {
+              "type": "str",
+              "required": false,
+              "default": "EXTRA_STOCK_A",
+              "description": "代码类型，见 security_type 枚举"
+            }
+          },
+          "returns": {
+            "type": "dataframe",
+            "description": "index为股票代码，column为 symbol(证券简称), security_status(产品状态标志), pre_close(昨收价), high_limited(涨停价), low_limited(跌停价), price_tick(最小价格变动单位)"
+          }
+        },
+        "get_code_list": {
+          "description": "获取每日最新代码表（沪深北），交易日早上9点前更新，无法获取历史代码表",
+          "parameters": {
+            "security_type": {
+              "type": "str",
+              "required": false,
+              "default": "EXTRA_STOCK_A",
+              "description": "代码类型，见 security_type(沪深北) 枚举"
+            }
+          },
+          "returns": {
+            "type": "list[str]",
+            "description": "证券代码列表"
+          }
+        },
+        "get_future_code_list": {
+          "description": "获取每日最新代码表（期货交易所），交易日早上9点前更新",
+          "parameters": {
+            "security_type": {
+              "type": "str",
+              "required": true,
+              "default": "EXTRA_FUTURE",
+              "description": "代码类型，见 security_type(期货交易所) 枚举"
+            }
+          },
+          "returns": {
+            "type": "list[str]",
+            "description": "期货证券代码列表"
+          }
+        },
+        "get_option_code_list": {
+          "description": "获取每日最新代码表（期权），交易日早上9点前更新",
+          "parameters": {
+            "security_type": {
+              "type": "str",
+              "required": true,
+              "default": "EXTRA_ETF_OP",
+              "description": "代码类型，见 security_type(期权) 枚举"
+            }
+          },
+          "returns": {
+            "type": "list[str]",
+            "description": "期权代码列表"
+          }
+        },
+        "get_backward_factor": {
+          "description": "获取后复权因子数据并本地存储",
+          "parameters": {
+            "code_list": {
+              "type": "list[str]",
+              "required": true,
+              "description": "代码列表，支持股票、ETF"
+            },
+            "local_path": {
+              "type": "str",
+              "required": true,
+              "description": "本地存储复权因子数据的文件夹绝对路径，如 'D://AmazingData_local_data//'"
+            },
+            "is_local": {
+              "type": "bool",
+              "required": true,
+              "default": true,
+              "description": "是否使用本地存储数据。True:优先本地; False:从服务器获取并更新本地"
+            }
+          },
+          "returns": {
+            "type": "dataframe",
+            "description": "index为交易日期，column为股票代码"
+          }
+        },
+        "get_adj_factor": {
+          "description": "获取单次复权因子数据并本地存储",
+          "parameters": {
+            "code_list": {
+              "type": "list[str]",
+              "required": true,
+              "description": "代码列表，支持股票、ETF"
+            },
+            "local_path": {
+              "type": "str",
+              "required": true,
+              "description": "本地存储路径"
+            },
+            "is_local": {
+              "type": "bool",
+              "required": true,
+              "default": true,
+              "description": "是否使用本地存储数据"
+            }
+          },
+          "returns": {
+            "type": "dataframe",
+            "description": "index为交易日期，column为股票代码"
+          }
+        },
+        "get_hist_code_list": {
+          "description": "获取历史代码表，先检查本地数据，再从服务端补充",
+          "parameters": {
+            "security_type": {
+              "type": "str",
+              "required": true,
+              "default": "EXTRA_STOCK_A_SH_SZ",
+              "description": "代码类型，支持 security_type(沪深北) 和 security_type(期货交易所)"
+            },
+            "start_date": {
+              "type": "int",
+              "required": true,
+              "description": "开始日期，闭区间，8位整数如20240101"
+            },
+            "end_date": {
+              "type": "int",
+              "required": true,
+              "description": "结束日期，闭区间，8位整数如20240701"
+            },
+            "local_path": {
+              "type": "str",
+              "required": true,
+              "description": "本地存储路径"
+            }
+          },
+          "returns": {
+            "type": "list[str]",
+            "description": "证券代码列表"
+          }
+        },
+        "get_calendar": {
+          "description": "获取交易所的交易日历",
+          "parameters": {
+            "data_type": {
+              "type": "str",
+              "required": false,
+              "default": "str",
+              "description": "返回数据类型，可选 datetime 或 str。str时返回list[str]，datetime时返回list[datetime]"
+            },
+            "market": {
+              "type": "str",
+              "required": false,
+              "default": "SH",
+              "description": "市场类型，见 market 枚举"
+            }
+          },
+          "returns": {
+            "type": "list[int] 或 list[str] 或 list[datetime]",
+            "description": "日期列表，类型取决于data_type参数"
+          }
+        },
+        "get_etf_pcf": {
+          "description": "获取指定ETF的申赎和成分股数据（沪深交易所ETF）",
+          "parameters": {
+            "code_list": {
+              "type": "list[str]",
+              "required": true,
+              "description": "ETF代码列表"
+            }
+          },
+          "returns": {
+            "type": "tuple(dataframe, dict[str, dataframe])",
+            "description": "返回元组: (etf_pcf_info: 申赎基本信息dataframe, etf_pcf_constituent: 成分股dict, key=ETF代码, value=dataframe)"
+          }
+        }
+      }
+    },
+    "MarketData": {
+      "description": "历史行情数据查询类，需要传入交易日历初始化。用法: ad.MarketData(calendar)",
+      "methods": {
+        "query_snapshot": {
+          "description": "快照数据的历史数据查询接口",
+          "parameters": {
+            "code_list": {
+              "type": "list[str]",
+              "required": true,
+              "description": "支持股票、指数、ETF、可转债、港股通、ETF期权等"
+            },
+            "begin_date": {
+              "type": "int",
+              "required": true,
+              "description": "开始日期，8位整数如20240101"
+            },
+            "end_date": {
+              "type": "int",
+              "required": true,
+              "description": "结束日期，8位整数如20240201"
+            },
+            "begin_time": {
+              "type": "int",
+              "required": false,
+              "description": "时分秒毫秒时间戳，8-9位，如90000000(9点), 172500000(17点25分)"
+            },
+            "end_time": {
+              "type": "int",
+              "required": false,
+              "description": "时分秒毫秒时间戳，同上格式"
+            }
+          },
+          "returns": {
+            "type": "dict[str, dataframe]",
+            "description": "key为证券代码，value为dataframe；指数返回SnapshotIndex结构，股票/ETF/可转债返回Snapshot结构，港股通返回SnapshotHKT结构，ETF期权返回SnapshotOption结构"
+          }
+        },
+        "query_kline": {
+          "description": "K线数据的历史数据查询接口，支持全部周期的K线数据",
+          "parameters": {
+            "code_list": {
+              "type": "list[str]",
+              "required": true,
+              "description": "支持股票、指数、ETF、可转债、期货、ETF期权"
+            },
+            "begin_date": {
+              "type": "int",
+              "required": true,
+              "description": "开始日期，8位整数"
+            },
+            "end_date": {
+              "type": "int",
+              "required": true,
+              "description": "结束日期，8位整数"
+            },
+            "period": {
+              "type": "Period",
+              "required": true,
+              "description": "数据周期，见 Period 枚举"
+            },
+            "begin_time": {
+              "type": "int",
+              "required": false,
+              "description": "时分时间戳，3-4位，如900(9点), 1725(17点25分)"
+            },
+            "end_time": {
+              "type": "int",
+              "required": false,
+              "description": "时分时间戳，同上格式"
+            }
+          },
+          "returns": {
+            "type": "dict[str, dataframe]",
+            "description": "key为证券代码，value为dataframe，column为Kline结构"
+          }
+        }
+      }
+    },
+    "SubscribeData": {
+      "description": "实时行情订阅类。通过装饰器 @sub_data.register(code_list, period) 注册回调函数接收实时数据推送",
+      "usage_note": "所有订阅回调函数需用 @sub_data.register 装饰器注册，然后调用 sub_data.run() 开始接收数据",
+      "methods": {
+        "register": {
+          "description": "装饰器，用于注册实时数据回调函数",
+          "parameters": {
+            "code_list": {
+              "type": "list[str]",
+              "required": true,
+              "description": "证券代码列表"
+            },
+            "period": {
+              "type": "Period",
+              "required": true,
+              "description": "数据周期，见 Period 枚举"
+            }
+          }
+        },
+        "run": {
+          "description": "启动实时数据订阅，开始接收数据"
+        }
+      },
+      "callback_handlers": {
+        "onSnapshotindex": {
+          "description": "指数实时快照回调函数",
+          "period": "Period.snapshot.value",
+          "supported_products": [
+            "北交所/上交所/深交所的指数"
+          ],
+          "data_type": "SnapshotIndex"
+        },
+        "onSnapshot": {
+          "description": "股票实时快照回调函数（也适用于ETF和可转债）",
+          "period": "Period.snapshot.value",
+          "supported_products": [
+            "北交所/上交所/深交所的股票"
+          ],
+          "data_type": "Snapshot"
+        },
+        "onSnapshotfuture": {
+          "description": "期货实时快照回调函数",
+          "period": "Period.snapshotfuture.value",
+          "supported_products": [
+            "中金所/上期所/大商所/郑商所/上海国际能源交易中心所"
+          ],
+          "data_type": "SnapshotFuture"
+        },
+        "onSnapshotetf": {
+          "description": "ETF实时快照回调函数",
+          "period": "Period.snapshot.value",
+          "supported_products": [
+            "上交所/深交所的ETF"
+          ],
+          "data_type": "Snapshot"
+        },
+        "onSnapshotkzz": {
+          "description": "可转债实时快照回调函数",
+          "period": "Period.snapshot.value",
+          "supported_products": [
+            "上交所/深交所的可转债"
+          ],
+          "data_type": "Snapshot"
+        },
+        "onSnapshothkt": {
+          "description": "港股通实时快照回调函数",
+          "period": "Period.snapshotHKT.value",
+          "doc_note": "PDF原文档代码示例中误用了Period.snapshot.value，参数表写的是Period.snapshotHKT.value，应以参数表为准",
+          "supported_products": [
+            "上交所/深交所港股通"
+          ],
+          "data_type": "SnapshotHKT"
+        },
+        "onSnapshotoption": {
+          "description": "ETF期权实时快照回调函数",
+          "period": "Period.snapshotoption.value",
+          "supported_products": [
+            "上交所/深交所的ETF期权"
+          ],
+          "data_type": "SnapshotOption"
+        },
+        "OnKLine": {
+          "description": "实时K线回调函数，支持所有周期",
+          "period": "任意Period枚举值",
+          "supported_products": [
+            "股票",
+            "指数",
+            "ETF",
+            "可转债",
+            "期货",
+            "ETF期权"
+          ],
+          "data_type": "Kline"
+        }
+      }
+    }
+  }
+}

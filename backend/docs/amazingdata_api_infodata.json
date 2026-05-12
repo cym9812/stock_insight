@@ -1,0 +1,911 @@
+{
+  "description": "财务数据、股东股本、融资融券、龙虎榜、大宗交易、期权、ETF、指数、国债收益率等全部查询接口",
+  "InfoData": {
+    "description": "证券信息与财务数据查询类，提供证券基本信息、历史状态、财务报表、股东股本等数据",
+    "methods": {
+      "get_stock_basic": {
+        "description": "获取上市公司证券基础数据（含已退市），包含中英文名称、上市日期、退市日期、上市板块等",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true,
+            "description": "沪深北交易所的代码列表"
+          }
+        },
+        "returns": {
+          "type": "dataframe",
+          "description": "字段: MARKET_CODE(证券代码), SECURITY_NAME(证券简称), COMP_NAME(中文名称), PINYIN(拼音简称), COMP_NAME_ENG(英文名称), LISTDATE(上市日期), DELISTDATE(退市日期), LISTPLATE_NAME(上市板块), COMP_SNAME_ENG(英文缩写), IS_LISTED(上市状态:1上市交易,3终止上市)"
+        }
+      },
+      "get_history_stock_status": {
+        "description": "获取历史证券数据（日度频率），含历史涨跌停、ST、除权除息等信息",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true,
+            "description": "沪深A股代码列表"
+          },
+          "local_path": {
+            "type": "str",
+            "required": true,
+            "description": "本地存储路径"
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "description": "本地数据缓存方案"
+          },
+          "begin_date": {
+            "type": "int",
+            "required": false,
+            "description": "开始日期"
+          },
+          "end_date": {
+            "type": "int",
+            "required": false,
+            "description": "结束日期"
+          }
+        },
+        "returns": {
+          "type": "dataframe",
+          "description": "字段: MARKET_CODE, TRADE_DATE, PRECLOSE, HIGH_LIMITED, LOW_LIMITED, PRICE_HIGH_LMT_RATE, PRICE_LOW_LMT_RATE, IS_ST_SEC, IS_SUSP_SEC, IS_WD_SEC(除息), IS_XR_SEC(除权)"
+        }
+      },
+      "get_bj_code_mapping": {
+        "description": "获取北交所存量上市公司股票新旧代码对照表",
+        "parameters": {
+          "local_path": {
+            "type": "str",
+            "required": true,
+            "description": "本地存储路径"
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "description": "本地数据缓存方案"
+          }
+        },
+        "returns": {
+          "type": "dataframe",
+          "description": "字段: OLD_CODE, NEW_CODE, SECURITY_NAME, LISTING_DATE"
+        }
+      },
+      "get_balance_sheet": {
+        "description": "获取资产负债表数据",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true,
+            "description": "沪深A股代码列表"
+          },
+          "local_path": {
+            "type": "str",
+            "required": true,
+            "description": "本地存储路径"
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "description": "本地数据缓存方案"
+          },
+          "begin_date": {
+            "type": "int",
+            "required": false,
+            "description": "报告期"
+          },
+          "end_date": {
+            "type": "int",
+            "required": false,
+            "description": "报告期"
+          }
+        },
+        "returns": {
+          "type": "dict[str, dataframe]",
+          "description": "key为证券代码，value为dataframe，包含资产负债表各字段"
+        }
+      },
+      "get_cash_flow": {
+        "description": "获取现金流量表数据",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true,
+            "description": "沪深A股代码列表"
+          },
+          "local_path": {
+            "type": "str",
+            "required": true,
+            "description": "本地存储路径"
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          },
+          "begin_date": {
+            "type": "int",
+            "required": false
+          },
+          "end_date": {
+            "type": "int",
+            "required": false
+          }
+        },
+        "returns": {
+          "type": "dict[str, dataframe]",
+          "description": "key为证券代码，value为dataframe，包含现金流量表各字段"
+        }
+      },
+      "get_income": {
+        "description": "获取利润表数据",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true,
+            "description": "沪深A股代码列表"
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          },
+          "begin_date": {
+            "type": "int",
+            "required": false
+          },
+          "end_date": {
+            "type": "int",
+            "required": false
+          }
+        },
+        "returns": {
+          "type": "dict[str, dataframe]",
+          "description": "key为证券代码，value为dataframe，包含利润表各字段"
+        }
+      },
+      "get_profit_express": {
+        "description": "获取业绩快报数据",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          },
+          "begin_date": {
+            "type": "int",
+            "required": false
+          },
+          "end_date": {
+            "type": "int",
+            "required": false
+          }
+        },
+        "returns": {
+          "type": "dataframe",
+          "description": "字段含 MARKET_CODE, REPORTING_PERIOD, ANN_DATE, ACTUAL_ANN_DATE, TOTAL_ASSETS, NET_PRO_EXCL_MIN_INT_INC, TOT_OPERA_REV 等"
+        }
+      },
+      "get_profit_notice": {
+        "description": "获取业绩预告数据",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          },
+          "begin_date": {
+            "type": "int",
+            "required": false
+          },
+          "end_date": {
+            "type": "int",
+            "required": false
+          }
+        },
+        "returns": {
+          "type": "dataframe",
+          "description": "业绩预告数据"
+        }
+      },
+      "get_share_holder": {
+        "description": "获取十大股东数据",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          },
+          "begin_date": {
+            "type": "int",
+            "required": false
+          },
+          "end_date": {
+            "type": "int",
+            "required": false
+          }
+        },
+        "returns": {
+          "type": "dataframe",
+          "description": "十大股东数据"
+        }
+      },
+      "get_holder_num": {
+        "description": "获取股东户数数据",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          },
+          "begin_date": {
+            "type": "int",
+            "required": false
+          },
+          "end_date": {
+            "type": "int",
+            "required": false
+          }
+        },
+        "returns": {
+          "type": "dataframe",
+          "description": "股东户数数据"
+        }
+      },
+      "get_equity_structure": {
+        "description": "获取股本结构数据",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          },
+          "begin_date": {
+            "type": "int",
+            "required": false
+          },
+          "end_date": {
+            "type": "int",
+            "required": false
+          }
+        },
+        "returns": {
+          "type": "dataframe",
+          "description": "股本结构数据"
+        }
+      },
+      "get_equity_pledge_freeze": {
+        "description": "获取股权冻结/质押数据",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          },
+          "begin_date": {
+            "type": "int",
+            "required": false
+          },
+          "end_date": {
+            "type": "int",
+            "required": false
+          }
+        },
+        "returns": {
+          "type": "dataframe",
+          "description": "股权冻结/质押数据"
+        }
+      },
+      "get_equity_restricted": {
+        "description": "获取限售股解禁数据",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          },
+          "begin_date": {
+            "type": "int",
+            "required": false
+          },
+          "end_date": {
+            "type": "int",
+            "required": false
+          }
+        },
+        "returns": {
+          "type": "dataframe",
+          "description": "限售股解禁数据"
+        }
+      },
+      "get_dividend": {
+        "description": "获取分红数据",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          },
+          "begin_date": {
+            "type": "int",
+            "required": false
+          },
+          "end_date": {
+            "type": "int",
+            "required": false
+          }
+        },
+        "returns": {
+          "type": "dataframe",
+          "description": "分红数据，含分红进度代码 DIV_PROGRESS"
+        }
+      },
+      "get_right_issue": {
+        "description": "获取配股数据",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          },
+          "begin_date": {
+            "type": "int",
+            "required": false
+          },
+          "end_date": {
+            "type": "int",
+            "required": false
+          }
+        },
+        "returns": {
+          "type": "dataframe",
+          "description": "配股数据，含配股进度代码 PROGRESS"
+        }
+      },
+      "get_margin_summary": {
+        "description": "获取指定日期的上市公司融资融券成交汇总数据",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true,
+            "description": "沪深A股代码列表"
+          },
+          "local_path": {
+            "type": "str",
+            "required": true,
+            "description": "本地存储路径"
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "description": "本地数据缓存方案"
+          },
+          "begin_date": {
+            "type": "int",
+            "required": false,
+            "description": "交易日"
+          },
+          "end_date": {
+            "type": "int",
+            "required": false,
+            "description": "交易日"
+          }
+        },
+        "returns": {
+          "type": "dataframe",
+          "description": "融资融券成交汇总"
+        }
+      },
+      "get_margin_detail": {
+        "description": "获取融资融券交易明细数据",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          },
+          "begin_date": {
+            "type": "int",
+            "required": false
+          },
+          "end_date": {
+            "type": "int",
+            "required": false
+          }
+        },
+        "returns": {
+          "type": "dataframe",
+          "description": "融资融券交易明细"
+        }
+      },
+      "get_long_hu_bang": {
+        "description": "获取龙虎榜数据",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          },
+          "begin_date": {
+            "type": "int",
+            "required": false
+          },
+          "end_date": {
+            "type": "int",
+            "required": false
+          }
+        },
+        "returns": {
+          "type": "dataframe",
+          "description": "龙虎榜数据"
+        }
+      },
+      "get_block_trading": {
+        "description": "获取大宗交易数据",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          },
+          "begin_date": {
+            "type": "int",
+            "required": false
+          },
+          "end_date": {
+            "type": "int",
+            "required": false
+          }
+        },
+        "returns": {
+          "type": "dataframe",
+          "description": "大宗交易数据"
+        }
+      },
+      "get_option_basic_info": {
+        "description": "获取期权基本资料（沪深交易所ETF期权）",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true,
+            "description": "期权代码列表"
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          }
+        },
+        "returns": {
+          "type": "dataframe",
+          "description": "期权基本资料"
+        }
+      },
+      "get_option_std_ctr_specs": {
+        "description": "获取期权标准合约属性（沪深交易所ETF期权）",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          }
+        },
+        "returns": {
+          "type": "dataframe",
+          "description": "期权标准合约属性"
+        }
+      },
+      "get_option_mon_ctr_specs": {
+        "description": "获取期权月合约属性变动（沪深交易所ETF期权）",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          }
+        },
+        "returns": {
+          "type": "dataframe",
+          "description": "期权月合约属性变动"
+        }
+      },
+      "get_etf_pcf": {
+        "description": "获取指定ETF每日申赎/成分股数据（沪深交易所ETF）",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true,
+            "description": "ETF代码列表"
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          }
+        },
+        "returns": {
+          "type": "dataframe",
+          "description": "ETF每日申赎成分股数据"
+        }
+      },
+      "get_fund_share": {
+        "description": "获取指定ETF列表的基金份额数据",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true,
+            "description": "ETF代码列表"
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          },
+          "begin_date": {
+            "type": "int",
+            "required": false
+          },
+          "end_date": {
+            "type": "int",
+            "required": false
+          }
+        },
+        "returns": {
+          "type": "dict[str, dataframe]",
+          "description": "key为ETF代码，value为dataframe，index为日期"
+        }
+      },
+      "get_fund_iopv": {
+        "description": "获取指定ETF列表的每日收盘IOPV数据",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true,
+            "description": "ETF代码列表"
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          },
+          "begin_date": {
+            "type": "int",
+            "required": false
+          },
+          "end_date": {
+            "type": "int",
+            "required": false
+          }
+        },
+        "returns": {
+          "type": "dict[str, dataframe]",
+          "description": "key为ETF代码，value为dataframe"
+        }
+      },
+      "get_index_constituent": {
+        "description": "获取指定交易所指数列表的成分股数据（约600多只常用指数，无返回数据则表示不支持）",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true,
+            "description": "指数代码列表，仅支持常用指数"
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "description": "第一次运行需设为False才会从服务器获取数据"
+          }
+        },
+        "returns": {
+          "type": "dict[str, dataframe]",
+          "description": "key为指数代码，value为dataframe，index为日期"
+        }
+      },
+      "get_index_weight": {
+        "description": "获取指定交易所指数列表的成分股日权重数据。仅支持5个指数: 上证50(000016.SH), 沪深300(000300.SH), 中证500(000905.SH), 中证800(000906.SH), 中证1000(000852.SH)",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true,
+            "description": "指数代码列表，仅支持上述5个指数"
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          },
+          "begin_date": {
+            "type": "int",
+            "required": false,
+            "description": "变动日期"
+          },
+          "end_date": {
+            "type": "int",
+            "required": false,
+            "description": "变动日期"
+          }
+        },
+        "returns": {
+          "type": "dict[str, dataframe]",
+          "description": "key为指数代码，value为dataframe，index为日期"
+        }
+      },
+      "get_industry_base_info": {
+        "description": "获取行业指数的基本信息。注意：第一次运行is_local需设为False才会从服务器获取数据",
+        "parameters": {
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "description": "第一次运行必须设为False"
+          }
+        },
+        "returns": {
+          "type": "dict[str, dataframe]",
+          "description": "key为指数代码，value为dataframe，index为日期"
+        }
+      },
+      "get_industry_constituent": {
+        "description": "获取指定行业指数列表的成分股数据。code_list需从get_industry_base_info的返回值中提取",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true,
+            "description": "行业指数代码列表，仅从get_industry_base_info获取"
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "description": "第一次运行需设为False"
+          }
+        },
+        "returns": {
+          "type": "dict[str, dataframe]",
+          "description": "key为指数代码，value为dataframe，index为日期"
+        }
+      },
+      "get_industry_weight": {
+        "description": "获取指定行业指数列表的成分股日权重数据。code_list需从get_industry_base_info的返回值中提取",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true,
+            "description": "行业指数代码列表，仅从get_industry_base_info获取"
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          },
+          "begin_date": {
+            "type": "int",
+            "required": false,
+            "description": "交易日期"
+          },
+          "end_date": {
+            "type": "int",
+            "required": false,
+            "description": "交易日期"
+          }
+        },
+        "returns": {
+          "type": "dict[str, dataframe]",
+          "description": "key为指数代码，value为dataframe，index为日期"
+        }
+      },
+      "get_industry_daily": {
+        "description": "获取指定行业指数列表的日行情数据。code_list需从get_industry_base_info的返回值中提取",
+        "parameters": {
+          "code_list": {
+            "type": "list[str]",
+            "required": true,
+            "description": "行业指数代码列表，仅从get_industry_base_info获取"
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          },
+          "begin_date": {
+            "type": "int",
+            "required": false,
+            "description": "交易日期"
+          },
+          "end_date": {
+            "type": "int",
+            "required": false,
+            "description": "交易日期"
+          }
+        },
+        "returns": {
+          "type": "dict[str, dataframe]",
+          "description": "key为指数代码，value为dataframe，index为日期"
+        }
+      },
+      "get_treasury_yield": {
+        "description": "获取指定期限的国债收益率数据",
+        "parameters": {
+          "term_list": {
+            "type": "list[str]",
+            "required": true,
+            "description": "国债期限列表，可选值: m3(3个月), m6(6个月), y1(1年), y2(2年), y3(3年), y5(5年), y7(7年), y10(10年), y30(30年)"
+          },
+          "local_path": {
+            "type": "str",
+            "required": true
+          },
+          "is_local": {
+            "type": "bool",
+            "required": false,
+            "default": true
+          }
+        },
+        "returns": {
+          "type": "dataframe",
+          "description": "国债收益率数据"
+        }
+      }
+    }
+  }
+}

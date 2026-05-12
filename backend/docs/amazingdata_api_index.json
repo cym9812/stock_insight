@@ -1,0 +1,317 @@
+{
+  "description": "AmazingData API 索引 — 按此文件快速定位所需 API 所在的子文件",
+  "meta": {
+    "document": "中国银河证券星耀数智 AmazingData 开发手册",
+    "sdk_version": "V1.0.20",
+    "python_sdk_version": "V1.0.20",
+    "last_updated": "2025-12-16",
+    "description": "中国银河证券金融数据SDK，提供行情数据、财务数据、股东数据等查询和实时订阅功能",
+    "python_version": "Python 3.8 - 3.13",
+    "platforms": [
+      "Linux",
+      "Windows"
+    ]
+  },
+  "files": {
+    "amazingdata_api_core.json": {
+      "description": "核心API: 认证、基础数据、行情查询、实时订阅",
+      "classes": [
+        "Auth",
+        "BaseData",
+        "MarketData",
+        "SubscribeData"
+      ],
+      "method_count": 16
+    },
+    "amazingdata_api_infodata.json": {
+      "description": "查询API: 财务数据、股东股本、融资融券、龙虎榜、大宗交易、期权、ETF、指数、国债收益率",
+      "classes": [
+        "InfoData"
+      ],
+      "method_count": 32
+    },
+    "amazingdata_api_enums.json": {
+      "description": "枚举值: security_type, market, Period, REPORT_TYPE, STATEMENT_TYPE, trading_phase_code, security_status, DIV_PROGRESS, PROGRESS"
+    },
+    "amazingdata_api_reference.json": {
+      "description": "参考数据: 数据结构定义、本地缓存方案、数据覆盖范围、K线算法说明、文档已知问题"
+    }
+  },
+  "method_index": {
+    "get_code_info": {
+      "class": "BaseData",
+      "file": "amazingdata_api_core.json",
+      "description": "获取每日最新证券信息，交易日早上9点前更新当日最新"
+    },
+    "get_code_list": {
+      "class": "BaseData",
+      "file": "amazingdata_api_core.json",
+      "description": "获取每日最新代码表（沪深北），交易日早上9点前更新，无法获取历史代码表"
+    },
+    "get_future_code_list": {
+      "class": "BaseData",
+      "file": "amazingdata_api_core.json",
+      "description": "获取每日最新代码表（期货交易所），交易日早上9点前更新"
+    },
+    "get_option_code_list": {
+      "class": "BaseData",
+      "file": "amazingdata_api_core.json",
+      "description": "获取每日最新代码表（期权），交易日早上9点前更新"
+    },
+    "get_backward_factor": {
+      "class": "BaseData",
+      "file": "amazingdata_api_core.json",
+      "description": "获取后复权因子数据并本地存储"
+    },
+    "get_adj_factor": {
+      "class": "BaseData",
+      "file": "amazingdata_api_core.json",
+      "description": "获取单次复权因子数据并本地存储"
+    },
+    "get_hist_code_list": {
+      "class": "BaseData",
+      "file": "amazingdata_api_core.json",
+      "description": "获取历史代码表，先检查本地数据，再从服务端补充"
+    },
+    "get_calendar": {
+      "class": "BaseData",
+      "file": "amazingdata_api_core.json",
+      "description": "获取交易所的交易日历"
+    },
+    "get_etf_pcf": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取指定ETF每日申赎/成分股数据（沪深交易所ETF）"
+    },
+    "get_stock_basic": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取上市公司证券基础数据（含已退市），包含中英文名称、上市日期、退市日期、上市板块等"
+    },
+    "get_history_stock_status": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取历史证券数据（日度频率），含历史涨跌停、ST、除权除息等信息"
+    },
+    "get_bj_code_mapping": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取北交所存量上市公司股票新旧代码对照表"
+    },
+    "get_balance_sheet": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取资产负债表数据"
+    },
+    "get_cash_flow": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取现金流量表数据"
+    },
+    "get_income": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取利润表数据"
+    },
+    "get_profit_express": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取业绩快报数据"
+    },
+    "get_profit_notice": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取业绩预告数据"
+    },
+    "get_share_holder": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取十大股东数据"
+    },
+    "get_holder_num": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取股东户数数据"
+    },
+    "get_equity_structure": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取股本结构数据"
+    },
+    "get_equity_pledge_freeze": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取股权冻结/质押数据"
+    },
+    "get_equity_restricted": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取限售股解禁数据"
+    },
+    "get_dividend": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取分红数据"
+    },
+    "get_right_issue": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取配股数据"
+    },
+    "get_margin_summary": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取指定日期的上市公司融资融券成交汇总数据"
+    },
+    "get_margin_detail": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取融资融券交易明细数据"
+    },
+    "get_long_hu_bang": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取龙虎榜数据"
+    },
+    "get_block_trading": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取大宗交易数据"
+    },
+    "get_option_basic_info": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取期权基本资料（沪深交易所ETF期权）"
+    },
+    "get_option_std_ctr_specs": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取期权标准合约属性（沪深交易所ETF期权）"
+    },
+    "get_option_mon_ctr_specs": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取期权月合约属性变动（沪深交易所ETF期权）"
+    },
+    "get_fund_share": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取指定ETF列表的基金份额数据"
+    },
+    "get_fund_iopv": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取指定ETF列表的每日收盘IOPV数据"
+    },
+    "get_index_constituent": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取指定交易所指数列表的成分股数据（约600多只常用指数，无返回数据则表示不支持）"
+    },
+    "get_index_weight": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取指定交易所指数列表的成分股日权重数据。仅支持5个指数: 上证50(000016.SH), 沪深300(000300.SH), 中证500(000905.SH), 中证800(000906.SH), 中证1000(000852.SH)"
+    },
+    "get_industry_base_info": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取行业指数的基本信息。注意：第一次运行is_local需设为False才会从服务器获取数据"
+    },
+    "get_industry_constituent": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取指定行业指数列表的成分股数据。code_list需从get_industry_base_info的返回值中提取"
+    },
+    "get_industry_weight": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取指定行业指数列表的成分股日权重数据。code_list需从get_industry_base_info的返回值中提取"
+    },
+    "get_industry_daily": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取指定行业指数列表的日行情数据。code_list需从get_industry_base_info的返回值中提取"
+    },
+    "get_treasury_yield": {
+      "class": "InfoData",
+      "file": "amazingdata_api_infodata.json",
+      "description": "获取指定期限的国债收益率数据"
+    },
+    "query_snapshot": {
+      "class": "MarketData",
+      "file": "amazingdata_api_core.json",
+      "description": "快照数据的历史数据查询接口"
+    },
+    "query_kline": {
+      "class": "MarketData",
+      "file": "amazingdata_api_core.json",
+      "description": "K线数据的历史数据查询接口，支持全部周期的K线数据"
+    },
+    "register": {
+      "class": "SubscribeData",
+      "file": "amazingdata_api_core.json",
+      "description": "装饰器，用于注册实时数据回调函数"
+    },
+    "run": {
+      "class": "SubscribeData",
+      "file": "amazingdata_api_core.json",
+      "description": "启动实时数据订阅，开始接收数据"
+    },
+    "login": {
+      "class": "Auth",
+      "file": "amazingdata_api_core.json",
+      "description": "API登录，所有数据接口调用前必须先登录"
+    },
+    "logout": {
+      "class": "Auth",
+      "file": "amazingdata_api_core.json",
+      "description": "API退出登录（正常使用无需调用）"
+    },
+    "update_password": {
+      "class": "Auth",
+      "file": "amazingdata_api_core.json",
+      "description": "更新密码（必须先登录）"
+    },
+    "onSnapshotindex": {
+      "class": "SubscribeData (callback handler)",
+      "file": "amazingdata_api_core.json",
+      "description": "指数实时快照回调函数"
+    },
+    "onSnapshot": {
+      "class": "SubscribeData (callback handler)",
+      "file": "amazingdata_api_core.json",
+      "description": "股票实时快照回调函数（也适用于ETF和可转债）"
+    },
+    "onSnapshotfuture": {
+      "class": "SubscribeData (callback handler)",
+      "file": "amazingdata_api_core.json",
+      "description": "期货实时快照回调函数"
+    },
+    "onSnapshotetf": {
+      "class": "SubscribeData (callback handler)",
+      "file": "amazingdata_api_core.json",
+      "description": "ETF实时快照回调函数"
+    },
+    "onSnapshotkzz": {
+      "class": "SubscribeData (callback handler)",
+      "file": "amazingdata_api_core.json",
+      "description": "可转债实时快照回调函数"
+    },
+    "onSnapshothkt": {
+      "class": "SubscribeData (callback handler)",
+      "file": "amazingdata_api_core.json",
+      "description": "港股通实时快照回调函数"
+    },
+    "onSnapshotoption": {
+      "class": "SubscribeData (callback handler)",
+      "file": "amazingdata_api_core.json",
+      "description": "ETF期权实时快照回调函数"
+    },
+    "OnKLine": {
+      "class": "SubscribeData (callback handler)",
+      "file": "amazingdata_api_core.json",
+      "description": "实时K线回调函数，支持所有周期"
+    }
+  }
+}

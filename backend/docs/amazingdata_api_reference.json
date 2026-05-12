@@ -1,0 +1,607 @@
+{
+  "data_structures": {
+    "Snapshot": {
+      "description": "Level-1快照数据结构，用于股票、ETF、可转债",
+      "fields": {
+        "code": {
+          "type": "str",
+          "description": "证券代码+市场"
+        },
+        "trade_time": {
+          "type": "datetime",
+          "description": "交易所行情数据时间"
+        },
+        "pre_close": {
+          "type": "float",
+          "description": "昨收价"
+        },
+        "last": {
+          "type": "float",
+          "description": "最新价"
+        },
+        "open": {
+          "type": "float",
+          "description": "开盘价"
+        },
+        "high": {
+          "type": "float",
+          "description": "最高价"
+        },
+        "low": {
+          "type": "float",
+          "description": "最低价"
+        },
+        "close": {
+          "type": "float",
+          "description": "收盘价"
+        },
+        "volume": {
+          "type": "float",
+          "description": "成交总量"
+        },
+        "amount": {
+          "type": "float",
+          "description": "成交总金额"
+        },
+        "num_trades": {
+          "type": "float",
+          "description": "成交笔数"
+        },
+        "high_limited": {
+          "type": "float",
+          "description": "涨停价"
+        },
+        "low_limited": {
+          "type": "float",
+          "description": "跌停价"
+        },
+        "ask_price1": {
+          "type": "float",
+          "description": "卖1档价格"
+        },
+        "ask_price2": {
+          "type": "float",
+          "description": "卖2档价格"
+        },
+        "ask_price3": {
+          "type": "float",
+          "description": "卖3档价格"
+        },
+        "ask_price4": {
+          "type": "float",
+          "description": "卖4档价格"
+        },
+        "ask_price5": {
+          "type": "float",
+          "description": "卖5档价格"
+        },
+        "ask_volume1": {
+          "type": "int",
+          "description": "卖1档量"
+        },
+        "ask_volume2": {
+          "type": "int",
+          "description": "卖2档量"
+        },
+        "ask_volume3": {
+          "type": "int",
+          "description": "卖3档量"
+        },
+        "ask_volume4": {
+          "type": "int",
+          "description": "卖4档量"
+        },
+        "ask_volume5": {
+          "type": "int",
+          "description": "卖5档量"
+        },
+        "bid_price1": {
+          "type": "float",
+          "description": "买1档价格"
+        },
+        "bid_price2": {
+          "type": "float",
+          "description": "买2档价格"
+        },
+        "bid_price3": {
+          "type": "float",
+          "description": "买3档价格"
+        },
+        "bid_price4": {
+          "type": "float",
+          "description": "买4档价格"
+        },
+        "bid_price5": {
+          "type": "float",
+          "description": "买5档价格"
+        },
+        "bid_volume1": {
+          "type": "int",
+          "description": "买1档量"
+        },
+        "bid_volume2": {
+          "type": "int",
+          "description": "买2档量"
+        },
+        "bid_volume3": {
+          "type": "int",
+          "description": "买3档量"
+        },
+        "bid_volume4": {
+          "type": "int",
+          "description": "买4档量"
+        },
+        "bid_volume5": {
+          "type": "int",
+          "description": "买5档量"
+        },
+        "iopv": {
+          "type": "float",
+          "description": "净值估产（仅基金品种有效）"
+        },
+        "trading_phase_code": {
+          "type": "str",
+          "description": "交易阶段代码"
+        }
+      }
+    },
+    "SnapshotOption": {
+      "description": "ETF期权快照数据结构",
+      "fields": {
+        "code": {
+          "type": "str",
+          "description": "证券代码+市场"
+        },
+        "trade_time": {
+          "type": "datetime",
+          "description": "交易所行情数据时间"
+        },
+        "trading_phase_code": {
+          "type": "str",
+          "description": "交易阶段代码"
+        },
+        "total_long_position": {
+          "type": "int",
+          "description": "总持仓量"
+        },
+        "volume": {
+          "type": "float",
+          "description": "成交总量"
+        },
+        "amount": {
+          "type": "float",
+          "description": "成交总金额"
+        },
+        "pre_close": {
+          "type": "float",
+          "description": "昨收价"
+        },
+        "pre_settle": {
+          "type": "float",
+          "description": "上次结算价"
+        },
+        "auction_price": {
+          "type": "float",
+          "description": "动态参考价（波动性中断参考价，仅上海有效）"
+        },
+        "auction_volume": {
+          "type": "int",
+          "description": "虚拟匹配数量（仅上海有效）"
+        },
+        "last": {
+          "type": "float",
+          "description": "最新价"
+        },
+        "open": {
+          "type": "float",
+          "description": "开盘价"
+        },
+        "high": {
+          "type": "float",
+          "description": "最高价"
+        },
+        "low": {
+          "type": "float",
+          "description": "最低价"
+        },
+        "close": {
+          "type": "float",
+          "description": "收盘价"
+        },
+        "settle": {
+          "type": "float",
+          "description": "本次结算价"
+        },
+        "high_limited": {
+          "type": "float",
+          "description": "涨停价"
+        },
+        "low_limited": {
+          "type": "float",
+          "description": "跌停价"
+        },
+        "ask_price1-5": {
+          "type": "float[5]",
+          "description": "卖1-5档价格"
+        },
+        "ask_volume1-5": {
+          "type": "int[5]",
+          "description": "卖1-5档量"
+        },
+        "bid_price1-5": {
+          "type": "float[5]",
+          "description": "买1-5档价格"
+        },
+        "bid_volume1-5": {
+          "type": "int[5]",
+          "description": "买1-5档量"
+        },
+        "contract_type": {
+          "type": "str",
+          "description": "合约类别"
+        },
+        "expire_date": {
+          "type": "int",
+          "description": "到期日"
+        },
+        "underlying_security_code": {
+          "type": "str",
+          "description": "标的代码"
+        },
+        "exercise_price": {
+          "type": "float",
+          "description": "行权价"
+        }
+      }
+    },
+    "SnapshotFuture": {
+      "description": "期货快照数据结构",
+      "fields": {
+        "code": {
+          "type": "str",
+          "description": "证券代码+市场"
+        },
+        "trade_time": {
+          "type": "datetime",
+          "description": "交易所行情数据时间"
+        },
+        "action_day": {
+          "type": "str",
+          "description": "业务日期"
+        },
+        "trading_day": {
+          "type": "str",
+          "description": "交易日期"
+        },
+        "pre_close": {
+          "type": "float",
+          "description": "昨收价"
+        },
+        "pre_settle": {
+          "type": "float",
+          "description": "上次结算价"
+        },
+        "pre_open_interest": {
+          "type": "int",
+          "description": "昨持仓量"
+        },
+        "open_interest": {
+          "type": "int",
+          "description": "持仓量"
+        },
+        "last": {
+          "type": "float",
+          "description": "最新价"
+        },
+        "open": {
+          "type": "float",
+          "description": "开盘价"
+        },
+        "high": {
+          "type": "float",
+          "description": "最高价"
+        },
+        "low": {
+          "type": "float",
+          "description": "最低价"
+        },
+        "close": {
+          "type": "float",
+          "description": "收盘价"
+        },
+        "volume": {
+          "type": "float",
+          "description": "成交总量"
+        },
+        "amount": {
+          "type": "float",
+          "description": "成交总金额"
+        },
+        "high_limited": {
+          "type": "float",
+          "description": "涨停价"
+        },
+        "low_limited": {
+          "type": "float",
+          "description": "跌停价"
+        },
+        "ask_price1-5": {
+          "type": "float[5]",
+          "description": "卖1-5档价格"
+        },
+        "ask_volume1-5": {
+          "type": "int[5]",
+          "description": "卖1-5档量"
+        },
+        "bid_price1-5": {
+          "type": "float[5]",
+          "description": "买1-5档价格"
+        },
+        "bid_volume1-5": {
+          "type": "int[5]",
+          "description": "买1-5档量"
+        },
+        "average_price": {
+          "type": "float",
+          "description": "当日均价"
+        },
+        "settle": {
+          "type": "float",
+          "description": "本次结算价"
+        }
+      }
+    },
+    "SnapshotIndex": {
+      "description": "指数快照数据结构",
+      "fields": {
+        "code": {
+          "type": "str",
+          "description": "证券代码+市场"
+        },
+        "trade_time": {
+          "type": "datetime",
+          "description": "交易所行情数据时间"
+        },
+        "last": {
+          "type": "float",
+          "description": "最新价"
+        },
+        "pre_close": {
+          "type": "float",
+          "description": "前收盘价"
+        },
+        "open": {
+          "type": "float",
+          "description": "今开盘价"
+        },
+        "high": {
+          "type": "float",
+          "description": "最高价"
+        },
+        "low": {
+          "type": "float",
+          "description": "最低价"
+        },
+        "close": {
+          "type": "float",
+          "description": "收盘价（仅上海有效）"
+        },
+        "volume": {
+          "type": "int",
+          "description": "成交总量（上交所:手，深交所:张）"
+        },
+        "amount": {
+          "type": "float",
+          "description": "成交总金额"
+        }
+      }
+    },
+    "SnapshotHKT": {
+      "description": "港股通快照数据结构",
+      "fields": {
+        "code": {
+          "type": "str",
+          "description": "证券代码+市场"
+        },
+        "trade_time": {
+          "type": "datetime",
+          "description": "交易所行情数据时间"
+        },
+        "pre_close": {
+          "type": "float",
+          "description": "昨收价"
+        },
+        "last": {
+          "type": "float",
+          "description": "最新价"
+        },
+        "high": {
+          "type": "float",
+          "description": "最高价"
+        },
+        "low": {
+          "type": "float",
+          "description": "最低价"
+        },
+        "volume": {
+          "type": "float",
+          "description": "成交总量"
+        },
+        "amount": {
+          "type": "float",
+          "description": "成交总金额"
+        },
+        "nominal_price": {
+          "type": "float",
+          "description": "暗盘价"
+        },
+        "ref_price": {
+          "type": "float",
+          "description": "参考价"
+        },
+        "bid_price_limit_up": {
+          "type": "float",
+          "description": "买盘上限价"
+        },
+        "bid_price_limit_down": {
+          "type": "float",
+          "description": "买盘下限价"
+        },
+        "offer_price_limit_up": {
+          "type": "float",
+          "description": "卖盘上限价"
+        },
+        "offer_price_limit_down": {
+          "type": "float",
+          "description": "卖盘下限价"
+        },
+        "high_limited": {
+          "type": "float",
+          "description": "冷静期价格上限"
+        },
+        "low_limited": {
+          "type": "float",
+          "description": "冷静期价格下限"
+        },
+        "ask_price1-5": {
+          "type": "float[5]",
+          "description": "卖1-5档价格"
+        },
+        "ask_volume1-5": {
+          "type": "int[5]",
+          "description": "卖1-5档量"
+        },
+        "bid_price1-5": {
+          "type": "float[5]",
+          "description": "买1-5档价格"
+        },
+        "bid_volume1-5": {
+          "type": "int[5]",
+          "description": "买1-5档量"
+        },
+        "trading_phase_code": {
+          "type": "str",
+          "description": "交易阶段代码"
+        }
+      }
+    },
+    "Kline": {
+      "description": "K线数据结构",
+      "fields": {
+        "code": {
+          "type": "str",
+          "description": "证券代码+市场"
+        },
+        "trade_time": {
+          "type": "datetime",
+          "description": "交易所行情数据时间"
+        },
+        "open": {
+          "type": "float",
+          "description": "今开盘价"
+        },
+        "high": {
+          "type": "float",
+          "description": "最高价"
+        },
+        "low": {
+          "type": "float",
+          "description": "最低价"
+        },
+        "close": {
+          "type": "float",
+          "description": "收盘价"
+        },
+        "volume": {
+          "type": "int",
+          "description": "成交总量"
+        },
+        "amount": {
+          "type": "float",
+          "description": "成交总金额"
+        }
+      }
+    }
+  },
+  "local_cache_scheme": {
+    "description": "本地数据缓存方案说明",
+    "parameter_group_1": {
+      "params": [
+        "local_path",
+        "is_local"
+      ],
+      "behavior": "支持本地缓存，全量历史数据本地保存，每次调用默认增量更新，加速读取",
+      "is_local_true": "本地有数据则从本地取（不获取最新），本地无数据则从服务端获取并更新本地",
+      "is_local_false": "从服务端获取数据并更新本地"
+    },
+    "parameter_group_2": {
+      "params": [
+        "begin_date",
+        "end_date"
+      ],
+      "behavior": "仅从服务器获取指定区间数据，不本地缓存，速度较慢，无增量更新"
+    },
+    "note": "参数组1和参数组2互斥，不能同时使用"
+  },
+  "data_coverage": {
+    "行情数据": {
+      "股票": {
+        "数据类型": "Level-1快照、K线",
+        "数据起点": "2013年至今",
+        "市场": "上交所/深交所/北交所",
+        "支持实时订阅": true
+      },
+      "指数": {
+        "数据类型": "Level-1快照、K线",
+        "数据起点": "—",
+        "市场": "上交所/深交所/北交所",
+        "支持实时订阅": true
+      },
+      "债券": {
+        "数据类型": "Level-1快照、K线",
+        "数据起点": "—",
+        "市场": "上交所/深交所",
+        "支持实时订阅": true
+      },
+      "场内基金": {
+        "数据类型": "Level-1快照、K线",
+        "数据起点": "—",
+        "市场": "上交所/深交所",
+        "支持实时订阅": true
+      },
+      "期权": {
+        "数据类型": "Level-1快照、K线",
+        "数据起点": "2015年至今",
+        "市场": "上交所/深交所ETF期权",
+        "支持实时订阅": true
+      },
+      "港股通": {
+        "数据类型": "港股通行情快照",
+        "数据起点": "2023年至今",
+        "市场": "上交所/深交所",
+        "支持实时订阅": true
+      },
+      "期货": {
+        "数据类型": "Level-1快照、K线",
+        "数据起点": "2010年4月至今(中金所)/2013年6月至今(大商所)/2011年1月至今(郑商所)/2019年8月至今(上期所/上期能源)",
+        "市场": "中金所/大商所/郑商所/上期所/上海国际能源交易中心",
+        "支持实时订阅": true
+      }
+    }
+  },
+  "kline_algorithm_notes": {
+    "集合竞价处理": "对于分钟K线，开盘集合竞价数据的成交量包含在当日第一根K线，收盘集合竞价数据的成交量包含在当日最后一根K线",
+    "前推算法": "9:30的1分钟K线，计算的是9:30:00.000~9:30:59.999期间的K线；9:35的5分钟K线，计算的是9:35:00.000~9:39:59.999期间的K线"
+  },
+  "doc_known_issues": {
+    "description": "PDF原文档中发现的已知错误，使用时需注意",
+    "issues": {
+      "login参数名矛盾": "参数表写 ip(服务器ip) + host(端口号)，但所有代码示例用 host(ip) + port(端口号)。JSON以代码示例为准。",
+      "onSnapshothkt代码示例period错误": "参数表写 Period.snapshotHKT.value，代码示例误用 Period.snapshot.value。以参数表为准。",
+      "onSnapshothkt code_list描述错误": "参数表code_list描述写'可转债'，实际应为'港股通'（copy-paste错误）。",
+      "onSnapshotoption功能描述错误": "功能描述写'港股通快照数据'，实际应为'ETF期权快照数据'（copy-paste错误）。",
+      "get_fund_iopv功能描述错误": "功能描述写'获取基金份额数据'，实际应为'获取每日收盘IOPV数据'（copy-paste错误）。",
+      "local_path标记必选但示例不传": "get_history_stock_status、get_bj_code_mapping等多个方法的local_path在参数表标为必选，但示例代码仅传code_list即可调用。可能SDK有默认路径机制。"
+    }
+  }
+}

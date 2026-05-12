@@ -1,0 +1,67 @@
+[project]
+name = "stock_analysis_platform_backend"
+version = "0.1.0"
+requires-python = "==3.12.*"
+dependencies = [
+    "amazingdata",
+    "duckdb>=1.5.2",
+    "fastapi[standard]>=0.136.1",
+    "pandas>=3.0.2",
+    "pyarrow>=24.0.0",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.14.0",
+    "tgw",
+]
+
+[[tool.uv.index]]
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+default = true
+
+[tool.uv.sources]
+tgw = { path = "deps/tgw-1.0.8.7-py3-none-any.whl" }
+amazingdata = { path = "deps/AmazingData-1.1.6-cp312-none-any.whl" }
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+    "pytest-cov>=7.1.0",
+    "pytest-mock>=3.15.1",
+    "ruff>=0.15.12",
+]
+
+[tool.ruff]
+line-length = 120
+extend-exclude = [
+    "tests",
+    "static",
+    "scripts",
+    "tools",
+]
+
+[tool.ruff.lint]
+extend-select = [
+    "E",
+    "F",
+    "B",
+    "SIM",
+    "PERF",
+    "NPY",
+    "PD",
+    "FLY",
+    "ERA",
+    "I",
+    "UP",
+    "RUF",
+    "C4",
+    "PT",
+]
+ignore = [
+    "RUF001",
+    "RUF002",
+    "RUF003",
+    "UP006",
+    "UP007",
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
