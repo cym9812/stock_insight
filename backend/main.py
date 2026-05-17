@@ -5,11 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.api.router import api_router
 from backend.core.config import settings
-from backend.core.logging import init_logging
 from backend.core.scheduler import shutdown_scheduler, start_scheduler
 from backend.data.layout import get_local_data_layout
-
-init_logging(settings)
 
 
 @asynccontextmanager
@@ -21,17 +18,17 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title=settings.project_name,
-    openapi_url=f"{settings.api_v1_prefix}/openapi.json",
+    title=settings.app.project_name,
+    openapi_url=f"{settings.app.api_v1_prefix}/openapi.json",
     lifespan=lifespan,
 )
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=settings.cors.origins,
+    allow_credentials=settings.cors.allow_credentials,
+    allow_methods=settings.cors.allow_methods,
+    allow_headers=settings.cors.allow_headers,
 )
 
 
@@ -40,9 +37,14 @@ async def health_check():
     return {"status": "ok", "message": "System is running"}
 
 
-app.include_router(api_router, prefix=settings.api_v1_prefix)
+app.include_router(api_router, prefix=settings.app.api_v1_prefix)
 
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("backend.main:app", host=settings.host, port=settings.port, reload=settings.reload)
+    uvicorn.run(
+        app=app,
+        host=settings.app.host,
+        port=settings.app.port,
+        reload=settings.app.reload,
+    )

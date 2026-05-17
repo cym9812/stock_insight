@@ -89,4 +89,4 @@ class LocalDataLayout:
 
 
 def get_local_data_layout() -> LocalDataLayout:
-    return LocalDataLayout(settings.data_root_path)
+    return LocalDataLayout(settings.storage.root_dir)
