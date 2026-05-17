@@ -77,20 +77,15 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import * as echarts from 'echarts';
-import axios from 'axios';
-import { API_DATA } from '../config/api';
+import { getRecommendations, getStrategyBacktest } from '../api/strategies';
+import type { BacktestResponse, Recommendation } from '../types/strategy';
 
 const backtestChart = ref<HTMLElement | null>(null);
-const recommendations = ref<any[]>([]);
-const backtestData = ref<any>(null);
+const recommendations = ref<Recommendation[]>([]);
+const backtestData = ref<BacktestResponse | null>(null);
 const filter = ref({ market: 'all', winRate: '0' });
 
-const screenerData = ref([
-  { ticker: 'NVDA', signal: 'Strong Buy', signalClass: 'strong-buy', pe: '75.2', macd: 'Golden Cross', rsi: '62' },
-  { ticker: 'AMD', signal: 'Buy', signalClass: 'buy', pe: '42.1', macd: 'Neutral', rsi: '55' },
-  { ticker: 'INTC', signal: 'Sell', signalClass: 'sell', pe: '18.5', macd: 'Death Cross', rsi: '38' },
-  { ticker: 'MSFT', signal: 'Hold', signalClass: 'hold', pe: '35.4', macd: 'Neutral', rsi: '50' },
-]);
+const screenerData = ref<Array<{ ticker: string; signal: string; signalClass: string; pe: string; macd: string; rsi: string }>>([]);
 
 const filteredRecommendations = computed(() => {
   return recommendations.value.filter(r => r.confidence >= parseInt(filter.value.winRate));
@@ -102,7 +97,7 @@ const getConfidenceColor = (conf: number) => {
   return '#f43f5e';
 };
 
-const initBacktestChart = (data: any) => {
+const initBacktestChart = (data: BacktestResponse) => {
   if (!backtestChart.value) return;
   const chart = echarts.init(backtestChart.value);
   chart.setOption({
@@ -151,11 +146,11 @@ const initBacktestChart = (data: any) => {
 onMounted(async () => {
   try {
     const [recRes, backtestRes] = await Promise.all([
-      axios.get(`${API_DATA}/recommendations`),
-      axios.get(`${API_DATA}/strategy/backtest`)
+      getRecommendations(),
+      getStrategyBacktest()
     ]);
-    recommendations.value = recRes.data.recommendations;
-    backtestData.value = backtestRes.data;
+    recommendations.value = recRes.recommendations;
+    backtestData.value = backtestRes;
     initBacktestChart(backtestData.value);
   } catch (e) {
     console.error('Failed to load strategy data', e);

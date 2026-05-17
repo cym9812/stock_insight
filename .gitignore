@@ -6,6 +6,7 @@ Thumbs.db
 
 .idea/
 .vscode/
+.claude/
 *.swp
 *.swo
 
@@ -112,6 +113,7 @@ coverage/
 # =========================
 # Optional local app data
 # =========================
+local_data/
 uploads/
 media/
 tmp/

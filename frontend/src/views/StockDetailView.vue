@@ -19,10 +19,6 @@
       <section class="glass-card chart-section">
         <div class="chart-header">
           <h3>Super K-Line</h3>
-          <div class="chart-legend">
-            <span class="legend-item"><i class="buy-icon">B</i> Buy Signal</span>
-            <span class="legend-item"><i class="sell-icon">S</i> Sell Signal</span>
-          </div>
         </div>
         <div ref="klineRef" class="main-chart"></div>
       </section>
@@ -60,9 +56,9 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, nextTick } from 'vue';
 import * as echarts from 'echarts';
-import axios from 'axios';
 import { useRoute } from 'vue-router';
-import { API_DATA } from '../config/api';
+import { getStockAnalysis, getStockBars, getStocks } from '../api/stocks';
+import type { StockAnalysis, StockBar } from '../types/stock';
 
 const route = useRoute();
 
@@ -71,27 +67,25 @@ const radarRef = ref<HTMLElement | null>(null);
 
 const stocks = ref<string[]>([]);
 const selectedStock = ref<string>((route.params.ticker as string) || '');
-const klineData = ref<any[]>([]);
-const analysis = ref<any>({});
-const loadingAnalysis = ref(true);
+const klineData = ref<StockBar[]>([]);
+const analysis = ref<StockAnalysis>({
+  ticker: '',
+  radar: { indicators: [], values: [] },
+  summary: '',
+  risks: []
+});
+const loadingAnalysis = ref(false);
 
 const currentPrice = ref(0);
 const priceChange = ref(0);
 
-const initKLine = (data: any[]) => {
+const initKLine = (data: StockBar[]) => {
   if (!klineRef.value) return;
   const chart = echarts.init(klineRef.value);
   
-  const categoryData = data.map(d => d.trade_time.split('T')[0]);
+  const categoryData = data.map(d => d.trade_time?.split('T')[0] ?? '');
   const values = data.map(d => [d.open, d.close, d.low, d.high]);
   
-  // Mock B/S signals
-  const signals = data.map((d, i) => {
-    if (i % 20 === 5) return { type: 'B', coord: [categoryData[i], d.low], color: '#10b981' };
-    if (i % 20 === 15) return { type: 'S', coord: [categoryData[i], d.high], color: '#f43f5e' };
-    return null;
-  }).filter(s => s !== null);
-
   chart.setOption({
     tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
     grid: { left: '5%', right: '5%', bottom: '15%' },
@@ -102,22 +96,13 @@ const initKLine = (data: any[]) => {
       {
         type: 'candlestick',
         data: values,
-        itemStyle: { color: '#10b981', color0: '#f43f5e', borderColor: '#10b981', borderColor0: '#f43f5e' },
-        markPoint: {
-          data: signals.map((s: any) => ({
-            name: s.type,
-            coord: s.coord,
-            value: s.type,
-            itemStyle: { color: s.color }
-          })),
-          label: { color: '#fff', fontWeight: 'bold' }
-        }
+        itemStyle: { color: '#10b981', color0: '#f43f5e', borderColor: '#10b981', borderColor0: '#f43f5e' }
       }
     ]
   });
 };
 
-const initRadar = (data: any) => {
+const initRadar = (data: StockAnalysis['radar']) => {
   if (!radarRef.value) return;
   const chart = echarts.init(radarRef.value);
   chart.setOption({
@@ -140,22 +125,27 @@ const initRadar = (data: any) => {
 };
 
 const fetchData = async () => {
-  if (!selectedStock.value) return;
+  if (!selectedStock.value) {
+    loadingAnalysis.value = false;
+    return;
+  }
   loadingAnalysis.value = true;
   try {
     const [klRes, anRes] = await Promise.all([
-      axios.get(`${API_DATA}/${selectedStock.value}`),
-      axios.get(`${API_DATA}/stock/${selectedStock.value}/analysis`)
+      getStockBars(selectedStock.value),
+      getStockAnalysis(selectedStock.value)
     ]);
     
-    klineData.value = klRes.data.data;
-    analysis.value = anRes.data;
+    klineData.value = klRes.data;
+    analysis.value = anRes;
     
-    if (klineData.value.length > 0) {
+    if (klineData.value.length > 1) {
       const last = klineData.value[klineData.value.length - 1];
       const prev = klineData.value[klineData.value.length - 2];
-      currentPrice.value = last.close;
-      priceChange.value = parseFloat(((last.close - prev.close) / prev.close * 100).toFixed(2));
+      if (last.close !== null && prev.close !== null && prev.close !== 0) {
+        currentPrice.value = last.close;
+        priceChange.value = parseFloat(((last.close - prev.close) / prev.close * 100).toFixed(2));
+      }
     }
 
     await nextTick();
@@ -169,8 +159,7 @@ const fetchData = async () => {
 };
 
 onMounted(async () => {
-  const res = await axios.get(`${API_DATA}/stocks`);
-  stocks.value = res.data.stocks;
+  stocks.value = await getStocks();
   if (!selectedStock.value && stocks.value.length > 0) {
     selectedStock.value = stocks.value[0];
   }
@@ -220,28 +209,6 @@ watch(selectedStock, fetchData);
   justify-content: space-between;
   margin-bottom: 20px;
 }
-
-.legend-item {
-  margin-left: 16px;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
-
-.buy-icon, .sell-icon {
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  line-height: 18px;
-  text-align: center;
-  border-radius: 4px;
-  font-size: 0.7rem;
-  font-weight: bold;
-  font-style: normal;
-  margin-right: 4px;
-}
-
-.buy-icon { background: var(--up-color); color: white; }
-.sell-icon { background: var(--down-color); color: white; }
 
 .main-chart {
   width: 100%;

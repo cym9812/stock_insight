@@ -10,7 +10,7 @@ resolution-markers = [
 [[package]]
 name = "amazingdata"
 version = "1.1.6"
-source = { path = "deps/AmazingData-1.1.6-cp312-none-any.whl" }
+source = { path = "backend/deps/AmazingData-1.1.6-cp312-none-any.whl" }
 dependencies = [
     { name = "numba" },
     { name = "pydantic" },
@@ -335,6 +335,19 @@ wheels = [
     { url = "https://pypi.tuna.tsinghua.edu.cn/packages/e6/4b/e3f2cd17822cf772a4a51a0a8080b0032e6d37b2dbe8cfb724eac4e31c52/llvmlite-0.47.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:5853bf26160857c0c2573415ff4efe01c4c651e59e2c55c2a088740acfee51cd", size = 56275178 },
     { url = "https://pypi.tuna.tsinghua.edu.cn/packages/b6/55/a3b4a543185305a9bdf3d9759d53646ed96e55e7dfd43f53e7a421b8fbae/llvmlite-0.47.0-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:003bcf7fa579e14db59c1a1e113f93ab8a06b56a4be31c7f08264d1d4072d077", size = 55128632 },
     { url = "https://pypi.tuna.tsinghua.edu.cn/packages/2f/f5/d281ae0f79378a5a91f308ea9fdb9f9cc068fddd09629edc0725a5a8fde1/llvmlite-0.47.0-cp312-cp312-win_amd64.whl", hash = "sha256:f3079f25bdc24cd9d27c4b2b5e68f5f60c4fdb7e8ad5ee2b9b006007558f9df7", size = 38138692 },
+]
+
+[[package]]
+name = "loguru"
+version = "0.7.3"
+source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
+dependencies = [
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "win32-setctime", marker = "sys_platform == 'win32'" },
+]
+sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/3a/05/a1dae3dffd1116099471c643b8924f5aa6524411dc6c63fdae648c4f1aca/loguru-0.7.3.tar.gz", hash = "sha256:19480589e77d47b8d85b2c827ad95d49bf31b0dcde16593892eb51dd18706eb6", size = 63559 }
+wheels = [
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/0c/29/0348de65b8cc732daa3e33e67806420b2ae89bdce2b04af740289c5c6c8c/loguru-0.7.3-py3-none-any.whl", hash = "sha256:31a33c10c8e1e10422bfd431aeb5d351c7cf7fa671e3c4df004162264b28220c", size = 61595 },
 ]
 
 [[package]]
@@ -790,6 +803,7 @@ dependencies = [
     { name = "amazingdata" },
     { name = "duckdb" },
     { name = "fastapi", extra = ["standard"] },
+    { name = "loguru" },
     { name = "pandas" },
     { name = "pyarrow" },
     { name = "pydantic" },
@@ -807,14 +821,15 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "amazingdata", path = "deps/AmazingData-1.1.6-cp312-none-any.whl" },
+    { name = "amazingdata", path = "backend/deps/AmazingData-1.1.6-cp312-none-any.whl" },
     { name = "duckdb", specifier = ">=1.5.2" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.136.1" },
+    { name = "loguru", specifier = ">=0.7.3" },
     { name = "pandas", specifier = ">=3.0.2" },
     { name = "pyarrow", specifier = ">=24.0.0" },
     { name = "pydantic", specifier = ">=2.13.4" },
     { name = "pydantic-settings", specifier = ">=2.14.0" },
-    { name = "tgw", path = "deps/tgw-1.0.8.7-py3-none-any.whl" },
+    { name = "tgw", path = "backend/deps/tgw-1.0.8.7-py3-none-any.whl" },
 ]
 
 [package.metadata.requires-dev]
@@ -828,7 +843,7 @@ dev = [
 [[package]]
 name = "tgw"
 version = "1.0.8.7"
-source = { path = "deps/tgw-1.0.8.7-py3-none-any.whl" }
+source = { path = "backend/deps/tgw-1.0.8.7-py3-none-any.whl" }
 dependencies = [
     { name = "pandas" },
 ]
@@ -971,4 +986,13 @@ wheels = [
     { url = "https://pypi.tuna.tsinghua.edu.cn/packages/91/d6/7d4553ad4bf1c0421e1ebd4b18de5d9098383b5caa1d937b63df8d04b565/websockets-16.0-cp312-cp312-win32.whl", hash = "sha256:eaded469f5e5b7294e2bdca0ab06becb6756ea86894a47806456089298813c89", size = 178261 },
     { url = "https://pypi.tuna.tsinghua.edu.cn/packages/c3/f0/f3a17365441ed1c27f850a80b2bc680a0fa9505d733fe152fdf5e98c1c0b/websockets-16.0-cp312-cp312-win_amd64.whl", hash = "sha256:5569417dc80977fc8c2d43a86f78e0a5a22fee17565d78621b6bb264a115d4ea", size = 178693 },
     { url = "https://pypi.tuna.tsinghua.edu.cn/packages/6f/28/258ebab549c2bf3e64d2b0217b973467394a9cea8c42f70418ca2c5d0d2e/websockets-16.0-py3-none-any.whl", hash = "sha256:1637db62fad1dc833276dded54215f2c7fa46912301a24bd94d45d46a011ceec", size = 171598 },
+]
+
+[[package]]
+name = "win32-setctime"
+version = "1.2.0"
+source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
+sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/b3/8f/705086c9d734d3b663af0e9bb3d4de6578d08f46b1b101c2442fd9aecaa2/win32_setctime-1.2.0.tar.gz", hash = "sha256:ae1fdf948f5640aae05c511ade119313fb6a30d7eabe25fef9764dca5873c4c0", size = 4867 }
+wheels = [
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/e1/07/c6fe3ad3e685340704d314d765b7912993bcb8dc198f0e7a89382d37974b/win32_setctime-1.2.0-py3-none-any.whl", hash = "sha256:95d644c4e708aba81dc3704a116d8cbc974d70b3bdb8be1d150e36be6e9d1390", size = 4083 },
 ]

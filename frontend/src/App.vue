@@ -7,8 +7,8 @@ const route = useRoute()
   <div class="app-container">
     <nav class="sidebar glass-card">
       <div class="logo">
-        <span class="logo-icon">💠</span>
-        <h1>Antigravity <span class="sub">Insight</span></h1>
+        <span class="logo-icon">◆</span>
+        <h1>Stock <span class="sub">Insight</span></h1>
       </div>
       <ul class="nav-links">
         <li>
@@ -35,10 +35,10 @@ const route = useRoute()
       
       <div class="sidebar-footer">
         <div class="user-profile">
-          <div class="avatar">UX</div>
+          <div class="avatar">SI</div>
           <div class="info">
-            <span class="name">Premium User</span>
-            <span class="status">AI Active</span>
+            <span class="name">Local Workspace</span>
+            <span class="status">Ready</span>
           </div>
         </div>
       </div>

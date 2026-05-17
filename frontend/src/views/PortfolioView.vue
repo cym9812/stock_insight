@@ -5,11 +5,11 @@
       <div class="stats glass-card">
         <div class="stat-item">
           <span class="label">Total P/L</span>
-          <span class="value up">+$1,240.50 (+5.2%)</span>
+          <span class="value">$0.00 (0.0%)</span>
         </div>
         <div class="stat-item">
           <span class="label">Daily P/L</span>
-          <span class="value down">-$120.30 (-0.8%)</span>
+          <span class="value">$0.00 (0.0%)</span>
         </div>
       </div>
     </header>
@@ -81,16 +81,17 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
-import { API_DATA } from '../config/api';
-const watchlist = ref<any[]>([]);
-const holdings = ref<any[]>([]);
+import { getPortfolioOverview } from '../api/portfolio';
+import type { HoldingItem, WatchlistItem } from '../types/portfolio';
+
+const watchlist = ref<WatchlistItem[]>([]);
+const holdings = ref<HoldingItem[]>([]);
 
 onMounted(async () => {
   try {
-    const res = await axios.get(`${API_DATA}/portfolio/overview`);
-    watchlist.value = res.data.watchlist;
-    holdings.value = res.data.holdings;
+    const overview = await getPortfolioOverview();
+    watchlist.value = overview.watchlist;
+    holdings.value = overview.holdings;
   } catch (e) {
     console.error('Failed to fetch portfolio data', e);
   }

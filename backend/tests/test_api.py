@@ -5,12 +5,14 @@ from pathlib import Path
 import pandas as pd
 from fastapi.testclient import TestClient
 
-from backend.api import endpoints_data
-from backend.data.storage import FeatureStoreManager, normalize_stock_frame
+from backend.api.v1 import stocks
+from backend.data.market_bar_store import MarketBarStore
+from backend.data.normalizers import normalize_stock_frame
 from backend.main import app
+from backend.services.stock_service import StockService
 
 
-class FeatureStoreTests(unittest.TestCase):
+class MarketBarStoreTests(unittest.TestCase):
     def test_normalize_stock_frame_prefers_existing_lowercase_schema(self):
         raw = pd.DataFrame(
             {
@@ -20,7 +22,7 @@ class FeatureStoreTests(unittest.TestCase):
                 "Low": [None],
                 "Close": [None],
                 "Volume": [None],
-                "code": ["AAPL"],
+                "code": ["TEST"],
                 "trade_time": ["2026-05-11 09:30:00"],
                 "open": [10.0],
                 "high": [11.0],
@@ -30,7 +32,7 @@ class FeatureStoreTests(unittest.TestCase):
             }
         )
 
-        normalized = normalize_stock_frame(raw, "AAPL")
+        normalized = normalize_stock_frame(raw, "TEST")
 
         self.assertEqual(
             normalized.columns.tolist(),
@@ -41,8 +43,8 @@ class FeatureStoreTests(unittest.TestCase):
 
     def test_append_and_read_normalizes_schema(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            store = FeatureStoreManager(Path(tmpdir))
-            store.append_stock_data(
+            store = MarketBarStore(Path(tmpdir))
+            store.append_bars(
                 "MSFT",
                 pd.DataFrame(
                     {
@@ -56,21 +58,24 @@ class FeatureStoreTests(unittest.TestCase):
                 ),
             )
 
-            stored = store.get_stock_data("MSFT")
+            stored = store.get_bars("MSFT")
 
             self.assertEqual(stored.loc[0, "code"], "MSFT")
             self.assertEqual(stored.loc[0, "close"], 20.5)
-            self.assertEqual(stored.columns.tolist(), ["code", "trade_time", "open", "high", "low", "close", "volume"])
+            self.assertEqual(
+                stored.columns.tolist(),
+                ["code", "trade_time", "open", "high", "low", "close", "volume"],
+            )
 
 
-class DataApiTests(unittest.TestCase):
-    def test_stock_endpoint_returns_json_safe_payload(self):
+class ApiTests(unittest.TestCase):
+    def test_stock_bars_endpoint_returns_json_safe_payload(self):
         client = TestClient(app)
-        response = client.get("/api/v1/data/AAPL")
+        response = client.get("/api/v1/stocks/TEST/bars")
 
         self.assertEqual(response.status_code, 200)
         payload = response.json()
-        self.assertEqual(payload["ticker"], "AAPL")
+        self.assertEqual(payload["ticker"], "TEST")
         self.assertEqual(payload["count"], len(payload["data"]))
         if payload["data"]:
             self.assertEqual(
@@ -79,17 +84,32 @@ class DataApiTests(unittest.TestCase):
             )
 
     def test_missing_stock_returns_empty_payload(self):
-        original_store = endpoints_data.store_manager
+        original_service = stocks.stock_service
         try:
             with tempfile.TemporaryDirectory() as tmpdir:
-                endpoints_data.store_manager = FeatureStoreManager(Path(tmpdir))
+                stocks.stock_service = StockService(MarketBarStore(Path(tmpdir)))
                 client = TestClient(app)
-                response = client.get("/api/v1/data/NO_SUCH_TICKER")
+                response = client.get("/api/v1/stocks/NO_SUCH_TICKER/bars")
         finally:
-            endpoints_data.store_manager = original_store
+            stocks.stock_service = original_service
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"ticker": "NO_SUCH_TICKER", "count": 0, "data": []})
+
+    def test_business_routes_are_clean_and_available(self):
+        client = TestClient(app)
+
+        checks = [
+            "/api/v1/stocks",
+            "/api/v1/market/sentiment",
+            "/api/v1/strategies/recommendations",
+            "/api/v1/strategies/backtest",
+            "/api/v1/portfolio/overview",
+        ]
+
+        for path in checks:
+            with self.subTest(path=path):
+                self.assertEqual(client.get(path).status_code, 200)
 
 
 if __name__ == "__main__":

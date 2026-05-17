@@ -42,16 +42,16 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue';
 import * as echarts from 'echarts';
-import axios from 'axios';
-import { API_DATA } from '../config/api';
+import { getMarketHeatmap, getMarketIndices, getMarketSentiment } from '../api/market';
+import type { HeatmapItem, MarketIndex, MarketSentiment } from '../types/market';
 
 const sentimentGauge = ref<HTMLElement | null>(null);
 const heatmapChart = ref<HTMLElement | null>(null);
 const indexChartRefs = ref<Record<string, HTMLElement>>({});
 
-const sentiment = ref({ score: 0, label: 'Neutral', description: '' });
-const indices = ref<any[]>([]);
-const sectors = ref<any[]>([]);
+const sentiment = ref<MarketSentiment>({ score: 0, label: 'Neutral', description: '' });
+const indices = ref<MarketIndex[]>([]);
+const sectors = ref<HeatmapItem[]>([]);
 
 const setIndexChartRef = (el: any, name: string) => {
   if (el) indexChartRefs.value[name] = el;
@@ -115,7 +115,7 @@ const initMiniChart = (el: HTMLElement, data: number[], color: string) => {
   });
 };
 
-const initHeatmap = (data: any[]) => {
+const initHeatmap = (data: HeatmapItem[]) => {
   if (!heatmapChart.value) return;
   const chart = echarts.init(heatmapChart.value);
   chart.setOption({
@@ -137,15 +137,15 @@ const initHeatmap = (data: any[]) => {
 
 onMounted(async () => {
   try {
-    const [sentRes, idxRes, heatRes] = await Promise.all([
-      axios.get(`${API_DATA}/market/sentiment`),
-      axios.get(`${API_DATA}/market/indices`),
-      axios.get(`${API_DATA}/market/heatmap`)
+    const [sentimentData, indexData, heatmapData] = await Promise.all([
+      getMarketSentiment(),
+      getMarketIndices(),
+      getMarketHeatmap()
     ]);
 
-    sentiment.value = sentRes.data;
-    indices.value = idxRes.data;
-    sectors.value = heatRes.data;
+    sentiment.value = sentimentData;
+    indices.value = indexData;
+    sectors.value = heatmapData;
 
     await nextTick();
     initSentimentGauge(sentiment.value.score);
