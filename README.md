@@ -12,8 +12,9 @@ stock_insight/
 │   │   └── v1/                 # 按业务拆分的接口模块
 │   ├── services/               # 业务编排层
 │   ├── schemas/                # Pydantic 响应模型
-│   ├── core/                   # 配置、日志等应用基础设施
+│   ├── core/                   # 配置、日志、调度器等应用基础设施
 │   ├── data/                   # 本地数据仓、标准化、数据源适配接口
+│   ├── tasks/                  # 定时任务定义与注册
 │   ├── docs/                   # SDK/API 参考文档
 │   ├── deps/                   # 本地 wheel 依赖
 │   └── tests/                  # 后端测试
@@ -81,7 +82,8 @@ npm run dev
 - **数据标准化**：统一行情字段、时间和空值处理 (`backend/data/normalizers.py`)。
 - **数据源接口**：以 `backend/data/providers/base.py` 作为真实行情源适配入口。
 - **数据目录布局**：以 `backend/data/layout.py` 统一管理 `local_data` 下的各类运行期数据目录。
-- **后端分层**：API / Services / Schemas / Data 分离，便于后续接真实 SDK、策略和 Agent。
+- **定时任务**：使用 APScheduler `AsyncIOScheduler` 与 asyncio 事件循环集成，调度器实例在 `backend/core/scheduler.py`，任务定义在 `backend/tasks/`，随应用生命周期自动启停。
+- **后端分层**：API / Services / Schemas / Data / Tasks 分离，便于后续接真实 SDK、策略和 Agent。
 - **前端分层**：页面通过 `frontend/src/api` 访问后端，通过 `frontend/src/types` 共享业务类型。
 - **配置管理**：使用 Pydantic Settings 实现全局路径、环境变量、运行参数配置。
 - **日志系统**：使用 Loguru 提供控制台日志、文件日志、轮转和保留策略。

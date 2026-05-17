@@ -10,7 +10,7 @@ Stock Insight 是一个本地化股票量化分析与大模型交互平台。
 
 ## 当前技术栈
 
-- 后端：FastAPI、Pydantic Settings、Loguru、DuckDB、Pandas、PyArrow。
+- 后端：FastAPI、Pydantic Settings、Loguru、APScheduler、DuckDB、Pandas、PyArrow。
 - 前端：Vue 3、Vite、TypeScript、Vue Router、Axios、ECharts。
 - Python 环境与命令：使用 `uv`。
 - 本地数据：以 `local_data` 作为本地运行期数据根目录，目录由服务启动时自动创建，真实数据默认不提交。
@@ -33,8 +33,9 @@ backend/
 │   └── v1/              # 按业务拆分的接口模块
 ├── services/            # 业务编排层
 ├── schemas/             # Pydantic 响应模型
-├── core/                # 配置、日志等应用基础设施
+├── core/                # 配置、日志、调度器等应用基础设施
 ├── data/                # 本地数据存储、标准化、数据源适配接口
+├── tasks/               # 定时任务定义与注册
 ├── docs/                # SDK/API 参考文档
 ├── deps/                # 本地 wheel 依赖
 └── tests/               # 后端测试
@@ -42,13 +43,15 @@ backend/
 
 主要模块：
 
-- `backend/main.py`：FastAPI 应用入口，挂载 CORS、健康检查和 API v1 路由。
+- `backend/main.py`：FastAPI 应用入口，挂载 CORS、健康检查和 API v1 路由，管理调度器生命周期。
 - `backend/core/config.py`：全局配置，基于 Pydantic Settings，从环境变量读取。
 - `backend/core/logging.py`：Loguru 日志初始化，接管标准库 logging。
+- `backend/core/scheduler.py`：APScheduler AsyncIOScheduler 实例，提供 `start_scheduler()` / `shutdown_scheduler()` 生命周期接口。
 - `backend/data/layout.py`：统一管理 `local_data` 目录布局。
 - `backend/data/market_bar_store.py`：标准化行情 K 线的本地 Parquet 存储。
 - `backend/data/normalizers.py`：行情字段、时间和空值标准化。
 - `backend/data/providers/base.py`：真实行情数据源适配接口。
+- `backend/tasks/example_jobs.py`：示例定时任务（心跳 + 占位数据同步），提供 `register_jobs()` 注册入口。
 
 ## 前端结构
 
@@ -162,6 +165,7 @@ npm run build
 - 配置统一从 `backend/core/config.py` 获取。
 - 日志使用 `loguru`，初始化入口在 `backend/core/logging.py`。
 - 本地数据路径统一通过 `backend/data/layout.py` 获取。
+- 定时任务统一在 `backend/tasks/` 下定义，通过 `register_jobs()` 注册到 `backend/core/scheduler.py` 中的全局调度器实例；不要在 API 层或 Service 层直接操作调度器。
 
 ## 当前边界
 

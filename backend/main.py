@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.api.router import api_router
 from backend.core.config import settings
 from backend.core.logging import init_logging
+from backend.core.scheduler import shutdown_scheduler, start_scheduler
 from backend.data.layout import get_local_data_layout
 
 init_logging(settings)
@@ -14,7 +15,9 @@ init_logging(settings)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     get_local_data_layout().ensure_directories()
+    start_scheduler()
     yield
+    shutdown_scheduler()
 
 
 app = FastAPI(
