@@ -5,13 +5,17 @@ requires-python = "==3.12.*"
 dependencies = [
     "amazingdata",
     "apscheduler>=3.11.2",
+    "beautifulsoup4>=4.14.3",
     "duckdb>=1.5.2",
     "fastapi[standard]>=0.136.1",
+    "httpx>=0.28.1",
     "loguru>=0.7.3",
+    "openai>=2.37.0",
     "pandas>=3.0.2",
     "pyarrow>=24.0.0",
     "pydantic>=2.13.4",
     "pydantic-settings>=2.14.0",
+    "sqlmodel>=0.0.38",
     "tgw",
     "uvicorn>=0.46.0",
 ]
