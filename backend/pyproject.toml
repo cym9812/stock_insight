@@ -1,5 +1,5 @@
 [project]
-name = "stock_analysis_platform_backend"
+name = "stock_insight"
 version = "0.1.0"
 requires-python = "==3.12.*"
 dependencies = [
@@ -25,8 +25,8 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 default = true
 
 [tool.uv.sources]
-tgw = { path = "backend/deps/tgw-1.0.8.7-py3-none-any.whl" }
-amazingdata = { path = "backend/deps/AmazingData-1.1.6-cp312-none-any.whl" }
+tgw = { path = "deps/tgw-1.0.8.7-py3-none-any.whl" }
+amazingdata = { path = "deps/AmazingData-1.1.6-cp312-none-any.whl" }
 
 [dependency-groups]
 dev = [

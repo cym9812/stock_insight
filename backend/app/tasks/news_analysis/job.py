@@ -1,11 +1,11 @@
 import asyncio
 import json
 
-from backend.core.logger import logger
-from backend.tasks.news_analysis.cls_telegraph_scraper import ClsTelegraphScraper
-from backend.tasks.news_analysis.exceptions import ClsScraperError
-from backend.tasks.news_analysis.llm import NewsLLMClient
-from backend.tasks.news_analysis.news_storage import AiAnalysisTable, NewsItemTable, NewsStorage
+from app.core.logger import logger
+from app.tasks.news_analysis.cls_telegraph_scraper import ClsTelegraphScraper
+from app.tasks.news_analysis.exceptions import ClsScraperError
+from app.tasks.news_analysis.llm import NewsLLMClient
+from app.tasks.news_analysis.news_storage import AiAnalysisTable, NewsItemTable, NewsStorage
 
 
 class MarketNewsMonitorJob:

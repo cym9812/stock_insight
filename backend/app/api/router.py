@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from backend.api.v1 import agent, market, portfolio, stocks, strategies
+from app.api.v1 import agent, market, portfolio, stocks, strategies
 
 api_router = APIRouter()
 api_router.include_router(stocks.router, prefix="/stocks", tags=["stocks"])

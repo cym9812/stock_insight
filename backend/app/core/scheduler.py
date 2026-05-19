@@ -29,7 +29,7 @@ scheduler = AsyncIOScheduler(
 
 def start_scheduler() -> None:
     """启动调度器，并注册所有任务。"""
-    from backend.tasks.example_jobs import register_jobs
+    from app.tasks.example_jobs import register_jobs
 
     register_jobs(scheduler)
     scheduler.start()

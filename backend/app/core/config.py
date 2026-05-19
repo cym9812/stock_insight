@@ -4,9 +4,9 @@ from typing import Annotated
 from pydantic import BaseModel, BeforeValidator, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from backend.core.enum import LogLevel
+from app.core.enum import LogLevel
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 BASE_CONFIG = SettingsConfigDict(
     env_file=PROJECT_ROOT / ".env",
@@ -38,7 +38,7 @@ class AppSettings(BaseSettings):
 class StorageSettings(BaseSettings):
     model_config = BASE_CONFIG
 
-    root_dir: Path = Field(default=PROJECT_ROOT / "data", alias="STORAGE_ROOT_DIR")
+    root_dir: Path = Field(default=PROJECT_ROOT / "local_data", alias="STORAGE_ROOT_DIR")
 
 
 class CorsSettings(BaseSettings):

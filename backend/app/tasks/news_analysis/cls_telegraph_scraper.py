@@ -5,9 +5,9 @@ import httpx
 from bs4 import BeautifulSoup
 from pydantic import ValidationError
 
-from backend.core.logger import logger
-from backend.tasks.news_analysis.exceptions import ClsScraperError, DataFormatError, FetchError, ParseError
-from backend.tasks.news_analysis.schemas import NewsItem
+from app.core.logger import logger
+from app.tasks.news_analysis.exceptions import ClsScraperError, DataFormatError, FetchError, ParseError
+from app.tasks.news_analysis.schemas import NewsItem
 
 CLS_URL = "https://www.cls.cn/telegraph"
 

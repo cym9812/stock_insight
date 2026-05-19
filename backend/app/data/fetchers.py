@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 from loguru import logger
 
-from backend.data.market_bar_store import MarketBarStore
-from backend.data.providers.base import MarketDataProvider
+from app.data.market_bar_store import MarketBarStore
+from app.data.providers.base import MarketDataProvider
 
 
 @dataclass(frozen=True)

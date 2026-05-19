@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from backend.schemas.market import HeatmapItem, MarketIndexItem, MarketSentimentResponse
-from backend.services.market_service import MarketService
+from app.schemas.market import HeatmapItem, MarketIndexItem, MarketSentimentResponse
+from app.services.market_service import MarketService
 
 router = APIRouter()
 market_service = MarketService()

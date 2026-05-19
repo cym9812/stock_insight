@@ -1,6 +1,6 @@
 from openai import OpenAI
 
-from backend.tasks.news_analysis.schemas import NewsAnalysis, NewsItem
+from app.tasks.news_analysis.schemas import NewsAnalysis, NewsItem
 
 SYSTEM_PROMPT = """
 你是一个严谨的财经新闻分析助手。

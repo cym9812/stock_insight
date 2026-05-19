@@ -1,5 +1,5 @@
-from backend.data.market_bar_store import MarketBarStore
-from backend.data.normalizers import dataframe_to_records
+from app.data.market_bar_store import MarketBarStore
+from app.data.normalizers import dataframe_to_records
 
 
 class StockService:

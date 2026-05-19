@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from backend.schemas.strategy import BacktestResponse, RecommendationsResponse
-from backend.services.strategy_service import StrategyService
+from app.schemas.strategy import BacktestResponse, RecommendationsResponse
+from app.services.strategy_service import StrategyService
 
 router = APIRouter()
 strategy_service = StrategyService()

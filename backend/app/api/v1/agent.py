@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from backend.schemas.agent import ChatResponse
-from backend.services.agent_service import AgentService
+from app.schemas.agent import ChatResponse
+from app.services.agent_service import AgentService
 
 router = APIRouter()
 agent_service = AgentService()

@@ -3,8 +3,8 @@ from pathlib import Path
 import duckdb
 import pandas as pd
 
-from backend.data.layout import get_local_data_layout
-from backend.data.normalizers import STANDARD_COLUMNS, normalize_stock_frame
+from app.data.layout import get_local_data_layout
+from app.data.normalizers import STANDARD_COLUMNS, normalize_stock_frame
 
 
 class MarketBarStore:

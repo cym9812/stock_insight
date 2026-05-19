@@ -1,11 +1,11 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from sqlmodel import create_engine
 
-from backend.data.layout import get_local_data_layout
-from backend.tasks.news_analysis.cls_telegraph_scraper import ClsTelegraphScraper
-from backend.tasks.news_analysis.job import run_market_news_monitor
-from backend.tasks.news_analysis.llm import NewsLLMClient
-from backend.tasks.news_analysis.news_storage import NewsStorage
+from app.data.layout import get_local_data_layout
+from app.tasks.news_analysis.cls_telegraph_scraper import ClsTelegraphScraper
+from app.tasks.news_analysis.job import run_market_news_monitor
+from app.tasks.news_analysis.llm import NewsLLMClient
+from app.tasks.news_analysis.news_storage import NewsStorage
 
 
 def register_jobs(scheduler: AsyncIOScheduler) -> None:

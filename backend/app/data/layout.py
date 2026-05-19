@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-from backend.core.config import settings
+from app.core.config import settings
 
 
 @dataclass(frozen=True)

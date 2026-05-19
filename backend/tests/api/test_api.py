@@ -5,11 +5,11 @@ from pathlib import Path
 import pandas as pd
 from fastapi.testclient import TestClient
 
-from backend.api.v1 import stocks
-from backend.data.market_bar_store import MarketBarStore
-from backend.data.normalizers import normalize_stock_frame
-from backend.main import app
-from backend.services.stock_service import StockService
+from app.api.v1 import stocks
+from app.data.market_bar_store import MarketBarStore
+from app.data.normalizers import normalize_stock_frame
+from app.main import app
+from app.services.stock_service import StockService
 
 
 class MarketBarStoreTests(unittest.TestCase):

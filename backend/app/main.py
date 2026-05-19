@@ -3,10 +3,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.api.router import api_router
-from backend.core.config import settings
-from backend.core.scheduler import shutdown_scheduler, start_scheduler
-from backend.data.layout import get_local_data_layout
+from app.api.router import api_router
+from app.core.config import settings
+from app.core.scheduler import shutdown_scheduler, start_scheduler
+from app.data.layout import get_local_data_layout
 
 
 @asynccontextmanager

@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from backend.schemas.portfolio import PortfolioOverviewResponse
-from backend.services.portfolio_service import PortfolioService
+from app.schemas.portfolio import PortfolioOverviewResponse
+from app.services.portfolio_service import PortfolioService
 
 router = APIRouter()
 portfolio_service = PortfolioService()

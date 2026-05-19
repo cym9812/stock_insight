@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
-from backend.schemas.stock import StockAnalysisResponse, StockBarsResponse, StockListResponse
-from backend.services.stock_service import StockService
+from app.schemas.stock import StockAnalysisResponse, StockBarsResponse, StockListResponse
+from app.services.stock_service import StockService
 
 router = APIRouter()
 stock_service = StockService()
