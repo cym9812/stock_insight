@@ -1,49 +1,79 @@
 <script setup lang="ts">
+import {
+  Bot,
+  BriefcaseBusiness,
+  ChartCandlestick,
+  LayoutDashboard,
+  Newspaper,
+  Radar,
+} from '@lucide/vue'
 import { useRoute } from 'vue-router'
+
 const route = useRoute()
+
+const navSections = [
+  {
+    label: 'Markets',
+    items: [
+      { to: '/dashboard', label: 'Market Overview', icon: LayoutDashboard, active: (path: string) => path === '/dashboard' },
+      { to: '/strategy', label: 'Strategy Center', icon: Radar, active: (path: string) => path === '/strategy' },
+      { to: '/stock', label: 'Stock Analysis', icon: ChartCandlestick, active: (path: string) => path.startsWith('/stock') },
+      { to: '/portfolio', label: 'Portfolio', icon: BriefcaseBusiness, active: (path: string) => path === '/portfolio' },
+    ],
+  },
+  {
+    label: 'Automation',
+    items: [
+      { to: '/tasks/news-analysis', label: 'News Tasks', icon: Bot, active: (path: string) => path.startsWith('/tasks') },
+      { to: '/news-analysis/results', label: 'News Radar', icon: Newspaper, active: (path: string) => path.startsWith('/news-analysis') },
+    ],
+  },
+]
 </script>
 
 <template>
-  <div class="app-container">
-    <nav class="sidebar glass-card">
-      <div class="logo">
-        <span class="logo-icon">◆</span>
-        <h1>Stock <span class="sub">Insight</span></h1>
+  <div class="flex h-screen w-screen overflow-hidden bg-background text-foreground">
+    <nav class="flex w-[248px] shrink-0 flex-col border-r border-border bg-slate-950/45 px-3 py-4">
+      <div class="mb-5 flex h-12 items-center gap-3 px-2">
+        <div class="flex h-9 w-9 items-center justify-center rounded-lg border border-sky-300/25 bg-sky-300/10 text-xs font-black text-sky-200">
+          SI
+        </div>
+        <div class="min-w-0">
+          <h1 class="m-0 text-sm font-bold text-foreground">Stock Insight</h1>
+          <span class="block text-xs font-medium text-muted-foreground">Quant workspace</span>
+        </div>
       </div>
-      <ul class="nav-links">
-        <li>
-          <router-link to="/dashboard" :class="{ active: route.path === '/dashboard' }">
-            <span class="icon">📊</span> Market Overview
-          </router-link>
-        </li>
-        <li>
-          <router-link to="/strategy" :class="{ active: route.path === '/strategy' }">
-            <span class="icon">🎯</span> Strategy Center
-          </router-link>
-        </li>
-        <li>
-          <router-link to="/stock" :class="{ active: route.path.startsWith('/stock') }">
-            <span class="icon">📈</span> Stock Analysis
-          </router-link>
-        </li>
-        <li>
-          <router-link to="/portfolio" :class="{ active: route.path === '/portfolio' }">
-            <span class="icon">💼</span> Portfolio
-          </router-link>
-        </li>
-      </ul>
-      
-      <div class="sidebar-footer">
-        <div class="user-profile">
-          <div class="avatar">SI</div>
-          <div class="info">
-            <span class="name">Local Workspace</span>
-            <span class="status">Ready</span>
+
+      <div class="flex flex-col gap-4">
+        <section v-for="section in navSections" :key="section.label">
+          <div class="px-2 pb-2 text-[11px] font-bold uppercase text-slate-500">{{ section.label }}</div>
+          <div class="flex flex-col gap-1">
+            <router-link
+              v-for="item in section.items"
+              :key="item.to"
+              :to="item.to"
+              class="flex h-9 items-center gap-2.5 rounded-md px-2 text-sm font-semibold text-muted-foreground transition-colors hover:bg-secondary/60 hover:text-foreground"
+              :class="item.active(route.path) && 'border border-sky-300/20 bg-sky-300/10 text-sky-100'"
+            >
+              <component :is="item.icon" class="h-4 w-4" />
+              <span>{{ item.label }}</span>
+            </router-link>
+          </div>
+        </section>
+      </div>
+
+      <div class="mt-auto border-t border-border pt-4">
+        <div class="flex items-center gap-3 rounded-lg bg-secondary/45 p-2">
+          <div class="flex h-8 w-8 items-center justify-center rounded-md bg-slate-700 text-xs font-bold">SI</div>
+          <div>
+            <div class="text-xs font-semibold text-foreground">Local Workspace</div>
+            <div class="text-xs text-emerald-300">Ready</div>
           </div>
         </div>
       </div>
     </nav>
-    <main class="main-content">
+
+    <main class="min-w-0 flex-1 overflow-y-auto bg-gradient-to-b from-slate-900/60 to-background p-5">
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
           <component :is="Component" />
@@ -54,150 +84,18 @@ const route = useRoute()
 </template>
 
 <style scoped>
-.app-container {
-  display: flex;
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
-  background-color: var(--bg-dark);
-}
-
-.sidebar {
-  width: 280px;
-  margin: 20px;
-  display: flex;
-  flex-direction: column;
-  padding: 32px 24px;
-  border-radius: 24px;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 60px;
-}
-
-.logo-icon {
-  font-size: 1.8rem;
-  filter: drop-shadow(0 0 8px var(--accent));
-}
-
-.logo h1 {
-  font-size: 1.4rem;
-  margin: 0;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-}
-
-.logo h1 .sub {
-  color: var(--text-muted);
-  font-weight: 400;
-  font-size: 1.1rem;
-}
-
-.nav-links {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.nav-links a {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 20px;
-  color: var(--text-muted);
-  text-decoration: none;
-  border-radius: 14px;
-  transition: var(--transition);
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-
-.nav-links a .icon {
-  font-size: 1.2rem;
-  opacity: 0.7;
-}
-
-.nav-links a:hover {
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--text-main);
-  transform: translateX(6px);
-}
-
-.nav-links a.active {
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
-  color: var(--accent);
-  box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.2);
-}
-
-.nav-links a.active .icon {
-  opacity: 1;
-}
-
-.sidebar-footer {
-  margin-top: auto;
-  padding-top: 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.user-profile {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  color: white;
-  font-size: 0.8rem;
-}
-
-.info {
-  display: flex;
-  flex-direction: column;
-}
-
-.name {
-  font-weight: 700;
-  font-size: 0.9rem;
-}
-
-.status {
-  font-size: 0.7rem;
-  color: var(--up-color);
-  font-weight: 600;
-}
-
-.main-content {
-  flex: 1;
-  padding: 20px 20px 20px 0;
-  overflow-y: auto;
-}
-
 .fade-enter-active,
 .fade-leave-active {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 180ms ease, transform 180ms ease;
 }
 
 .fade-enter-from {
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(5px);
 }
 
 .fade-leave-to {
   opacity: 0;
-  transform: translateY(-10px);
+  transform: translateY(-5px);
 }
 </style>

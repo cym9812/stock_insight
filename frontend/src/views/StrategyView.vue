@@ -1,120 +1,124 @@
 <template>
-  <div class="strategy-view animate-fade-in">
-    <header class="view-header">
-      <h1 class="text-gradient">Strategy & Screener</h1>
-      <div class="filters glass-card">
-        <select v-model="filter.market">
-          <option value="all">All Markets</option>
-          <option value="us">US Stocks</option>
-          <option value="cn">A-Share</option>
-        </select>
-        <select v-model="filter.winRate">
-          <option value="0">Min Win Rate</option>
-          <option value="70"> > 70%</option>
-          <option value="80"> > 80%</option>
-        </select>
-        <button class="btn-primary">Apply Filters</button>
-      </div>
-    </header>
+  <div class="mx-auto w-full max-w-[1400px]">
+    <PageHeader title="Strategy & Screener" subtitle="Signals, recommendations, and factor screening">
+      <template #actions>
+        <div class="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-card p-2">
+          <select v-model="filter.market" class="h-9 rounded-md border border-input bg-slate-950/35 px-3 text-sm outline-none focus:ring-2 focus:ring-ring">
+            <option value="all">All Markets</option>
+            <option value="us">US Stocks</option>
+            <option value="cn">A-Share</option>
+          </select>
+          <select v-model="filter.winRate" class="h-9 rounded-md border border-input bg-slate-950/35 px-3 text-sm outline-none focus:ring-2 focus:ring-ring">
+            <option value="0">Min Win Rate</option>
+            <option value="70">> 70%</option>
+            <option value="80">> 80%</option>
+          </select>
+          <Button>Apply Filters</Button>
+        </div>
+      </template>
+    </PageHeader>
 
-    <!-- Strategy List -->
-    <section class="strategy-list grid-layout">
-      <div v-for="rec in filteredRecommendations" :key="rec.ticker" class="glass-card recommendation-card">
-        <div class="card-header">
-          <span class="ticker">{{ rec.ticker }}</span>
-          <span class="confidence" :style="{ color: getConfidenceColor(rec.confidence) }">
-            {{ rec.confidence }}% Confidence
-          </span>
+    <section class="mb-4 grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
+      <PanelCard v-for="rec in filteredRecommendations" :key="rec.ticker">
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <span class="text-xl font-black text-foreground">{{ rec.ticker }}</span>
+          <span :class="['text-xs font-bold', getConfidenceColor(rec.confidence)]">{{ rec.confidence }}% Confidence</span>
         </div>
-        <div class="prediction" :class="rec.prediction">
-          {{ rec.prediction === 'up' ? '▲ BULLISH' : '▼ BEARISH' }}
+        <div :class="['mb-3 text-base font-black uppercase', rec.prediction === 'up' ? 'text-emerald-300' : 'text-rose-300']">
+          {{ rec.prediction === 'up' ? 'Bullish' : 'Bearish' }}
         </div>
-        <p class="reason">{{ rec.reason }}</p>
-        <div class="card-footer">
-          <router-link :to="`/stock/${rec.ticker}`" class="btn-link">Deep Dive →</router-link>
-        </div>
-      </div>
+        <p class="mb-4 text-sm leading-6 text-muted-foreground">{{ rec.reason }}</p>
+        <router-link :to="`/stock/${rec.ticker}`" class="text-sm font-bold text-sky-200 hover:text-sky-100">
+          Deep Dive
+        </router-link>
+      </PanelCard>
     </section>
 
-    <!-- Performance Backtest -->
-    <section class="glass-card backtest-section">
-      <div class="section-header">
-        <h3>AI Strategy Performance (Backtest)</h3>
-        <span class="text-muted">vs. S&P 500 Index</span>
-      </div>
-      <div ref="backtestChart" class="chart-container"></div>
-    </section>
+    <PanelCard class="mb-4">
+      <template #header>
+        <h3 class="m-0 text-sm font-semibold text-foreground">AI Strategy Performance (Backtest)</h3>
+        <span class="text-xs text-muted-foreground">vs. S&P 500 Index</span>
+      </template>
+      <div ref="backtestChart" class="h-[340px] w-full"></div>
+    </PanelCard>
 
-    <!-- Screener Table -->
-    <section class="glass-card screener-section">
-      <h3>Multi-factor Screener</h3>
-      <table class="screener-table">
+    <PanelCard class="overflow-x-auto">
+      <template #header><h3 class="m-0 text-sm font-semibold text-foreground">Multi-factor Screener</h3></template>
+      <table class="w-full min-w-[760px] border-collapse text-sm">
         <thead>
-          <tr>
-            <th>Ticker</th>
-            <th>Signal</th>
-            <th>PE Ratio</th>
-            <th>MACD Status</th>
-            <th>RSI</th>
-            <th>Action</th>
+          <tr class="border-b border-border text-left text-xs text-muted-foreground">
+            <th class="px-3 py-2 font-semibold">Ticker</th>
+            <th class="px-3 py-2 font-semibold">Signal</th>
+            <th class="px-3 py-2 font-semibold">PE Ratio</th>
+            <th class="px-3 py-2 font-semibold">MACD Status</th>
+            <th class="px-3 py-2 font-semibold">RSI</th>
+            <th class="px-3 py-2 font-semibold">Action</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="stock in screenerData" :key="stock.ticker">
-            <td><strong>{{ stock.ticker }}</strong></td>
-            <td><span class="tag" :class="stock.signalClass">{{ stock.signal }}</span></td>
-            <td>{{ stock.pe }}</td>
-            <td>{{ stock.macd }}</td>
-            <td>{{ stock.rsi }}</td>
-            <td><button class="btn-small">Track</button></td>
+          <tr v-for="stock in screenerData" :key="stock.ticker" class="border-b border-border/70 hover:bg-secondary/25">
+            <td class="px-3 py-3 font-bold">{{ stock.ticker }}</td>
+            <td class="px-3 py-3"><span :class="signalClass(stock.signalClass)">{{ stock.signal }}</span></td>
+            <td class="px-3 py-3">{{ stock.pe }}</td>
+            <td class="px-3 py-3">{{ stock.macd }}</td>
+            <td class="px-3 py-3">{{ stock.rsi }}</td>
+            <td class="px-3 py-3"><Button variant="secondary" size="sm">Track</Button></td>
           </tr>
         </tbody>
       </table>
-    </section>
+    </PanelCard>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-import * as echarts from 'echarts';
-import { getRecommendations, getStrategyBacktest } from '../api/strategies';
-import type { BacktestResponse, Recommendation } from '../types/strategy';
+import { computed, onMounted, ref } from 'vue'
+import * as echarts from 'echarts'
+import { getRecommendations, getStrategyBacktest } from '@/api/strategies'
+import Button from '@/components/ui/Button.vue'
+import PageHeader from '@/components/ui/PageHeader.vue'
+import PanelCard from '@/components/ui/PanelCard.vue'
+import { chartCategoryAxis, chartColors, chartGrid, chartTooltip, chartValueAxis } from '@/config/chartTheme'
+import type { BacktestResponse, Recommendation } from '@/types/strategy'
 
-const backtestChart = ref<HTMLElement | null>(null);
-const recommendations = ref<Recommendation[]>([]);
-const backtestData = ref<BacktestResponse | null>(null);
-const filter = ref({ market: 'all', winRate: '0' });
+const backtestChart = ref<HTMLElement | null>(null)
+const recommendations = ref<Recommendation[]>([])
+const backtestData = ref<BacktestResponse | null>(null)
+const filter = ref({ market: 'all', winRate: '0' })
 
-const screenerData = ref<Array<{ ticker: string; signal: string; signalClass: string; pe: string; macd: string; rsi: string }>>([]);
+const screenerData = ref<Array<{ ticker: string; signal: string; signalClass: string; pe: string; macd: string; rsi: string }>>([])
 
 const filteredRecommendations = computed(() => {
-  return recommendations.value.filter(r => r.confidence >= parseInt(filter.value.winRate));
-});
+  return recommendations.value.filter(r => r.confidence >= parseInt(filter.value.winRate))
+})
 
 const getConfidenceColor = (conf: number) => {
-  if (conf > 80) return '#10b981';
-  if (conf > 60) return '#f59e0b';
-  return '#f43f5e';
-};
+  if (conf > 80) return 'text-emerald-300'
+  if (conf > 60) return 'text-amber-200'
+  return 'text-rose-300'
+}
+
+const signalClass = (value: string) => {
+  const base = 'inline-flex h-6 items-center rounded-md border px-2 text-xs font-bold uppercase'
+  if (value === 'buy' || value === 'strong-buy') return `${base} border-emerald-400/25 bg-emerald-400/10 text-emerald-200`
+  if (value === 'sell') return `${base} border-rose-400/25 bg-rose-400/10 text-rose-200`
+  return `${base} border-amber-300/25 bg-amber-300/10 text-amber-200`
+}
 
 const initBacktestChart = (data: BacktestResponse) => {
-  if (!backtestChart.value) return;
-  const chart = echarts.init(backtestChart.value);
+  if (!backtestChart.value) return
+  const chart = echarts.init(backtestChart.value)
   chart.setOption({
-    tooltip: { trigger: 'axis' },
-    legend: { data: ['AI Strategy', 'Benchmark'], textStyle: { color: '#f8fafc' } },
-    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+    tooltip: chartTooltip,
+    legend: { data: ['AI Strategy', 'Benchmark'], textStyle: { color: chartColors.text } },
+    grid: chartGrid,
     xAxis: {
       type: 'category',
       data: data.dates,
-      axisLine: { lineStyle: { color: '#475569' } },
-      axisLabel: { color: '#94a3b8' }
+      ...chartCategoryAxis,
     },
     yAxis: {
       type: 'value',
-      axisLine: { show: false },
-      splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } },
-      axisLabel: { color: '#94a3b8' }
+      ...chartValueAxis,
     },
     series: [
       {
@@ -122,179 +126,38 @@ const initBacktestChart = (data: BacktestResponse) => {
         type: 'line',
         data: data.returns,
         smooth: true,
-        lineStyle: { width: 3, color: '#38bdf8' },
-        itemStyle: { color: '#38bdf8' },
+        lineStyle: { width: 3, color: chartColors.accent },
+        itemStyle: { color: chartColors.accent },
         areaStyle: {
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: 'rgba(56, 189, 248, 0.2)' },
-            { offset: 1, color: 'transparent' }
-          ])
-        }
+            { offset: 0, color: 'rgba(125, 211, 252, 0.18)' },
+            { offset: 1, color: 'transparent' },
+          ]),
+        },
       },
       {
         name: 'Benchmark',
         type: 'line',
         data: data.benchmark,
         smooth: true,
-        lineStyle: { width: 2, color: '#94a3b8', type: 'dashed' },
-        itemStyle: { color: '#94a3b8' }
-      }
-    ]
-  });
-};
+        lineStyle: { width: 2, color: chartColors.muted, type: 'dashed' },
+        itemStyle: { color: chartColors.muted },
+      },
+    ],
+  })
+}
 
 onMounted(async () => {
   try {
     const [recRes, backtestRes] = await Promise.all([
       getRecommendations(),
-      getStrategyBacktest()
-    ]);
-    recommendations.value = recRes.recommendations;
-    backtestData.value = backtestRes;
-    initBacktestChart(backtestData.value);
+      getStrategyBacktest(),
+    ])
+    recommendations.value = recRes.recommendations
+    backtestData.value = backtestRes
+    initBacktestChart(backtestData.value)
   } catch (e) {
-    console.error('Failed to load strategy data', e);
+    console.error('Failed to load strategy data', e)
   }
-});
+})
 </script>
-
-<style scoped>
-.strategy-view {
-  padding: 24px;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-.view-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 32px;
-}
-
-.filters {
-  display: flex;
-  gap: 12px;
-  padding: 12px 20px;
-}
-
-select {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
-  padding: 8px 12px;
-  border-radius: 8px;
-  outline: none;
-}
-
-.strategy-list {
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  margin-bottom: 40px;
-}
-
-.recommendation-card {
-  padding: 24px;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.ticker {
-  font-size: 1.25rem;
-  font-weight: 800;
-}
-
-.confidence {
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.prediction {
-  font-size: 1.5rem;
-  font-weight: 900;
-  margin-bottom: 16px;
-}
-
-.prediction.up { color: var(--up-color); }
-.prediction.down { color: var(--down-color); }
-
-.reason {
-  color: var(--text-muted);
-  font-size: 0.95rem;
-  line-height: 1.6;
-  margin-bottom: 20px;
-}
-
-.btn-link {
-  color: var(--accent);
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.backtest-section {
-  padding: 24px;
-  margin-bottom: 40px;
-}
-
-.chart-container {
-  width: 100%;
-  height: 400px;
-}
-
-.screener-section {
-  padding: 24px;
-  overflow-x: auto;
-}
-
-.screener-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 16px;
-}
-
-th {
-  text-align: left;
-  color: var(--text-muted);
-  font-weight: 500;
-  padding: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-td {
-  padding: 16px 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.tag {
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.tag.buy { background: rgba(16, 185, 129, 0.1); color: #10b981; }
-.tag.strong-buy { background: #10b981; color: white; }
-.tag.sell { background: rgba(244, 63, 94, 0.1); color: #f43f5e; }
-.tag.hold { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
-
-.btn-small {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-@media (max-width: 768px) {
-  .view-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 20px;
-  }
-}
-</style>

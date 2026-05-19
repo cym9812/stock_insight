@@ -1,13 +1,12 @@
 from datetime import UTC, datetime
 
-from sqlmodel import Field, Session, SQLModel, select
+from sqlmodel import Field, Session, SQLModel, col, select
 
 
 class NewsItemTable(SQLModel, table=True):
     __tablename__ = "news_items"
 
     news_id: int = Field(primary_key=True)
-    title: str
     content: str
     publish_time: int
     source_url: str
@@ -21,8 +20,8 @@ class AiAnalysisTable(SQLModel, table=True):
     summary: str
     event_type: str
     market_impact: str
-    importance: int
-    urgency: int
+    importance: str
+    urgency: str
     sectors_json: str
     companies_json: str
     reasoning: str
@@ -44,9 +43,9 @@ class NewsStorage:
         """查询数据库，返回已存在的 news_id 集合"""
         if not news_ids:
             return set()
-            
+
         with Session(self.engine) as session:
-            statement = select(NewsItemTable.news_id).where(NewsItemTable.news_id.in_(news_ids))
+            statement = select(NewsItemTable.news_id).where(col(NewsItemTable.news_id).in_(news_ids))
             results = session.exec(statement)
             return set(results.all())
 

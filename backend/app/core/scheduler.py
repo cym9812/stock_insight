@@ -10,6 +10,8 @@ from apscheduler.jobstores.memory import MemoryJobStore
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from loguru import logger
 
+from app.core.task_monitor import install_scheduler_monitor
+
 # 全局 scheduler 实例
 scheduler = AsyncIOScheduler(
     jobstores={
@@ -29,9 +31,10 @@ scheduler = AsyncIOScheduler(
 
 def start_scheduler() -> None:
     """启动调度器，并注册所有任务。"""
-    from app.tasks.example_jobs import register_jobs
+    from app.tasks.news_analysis import register_jobs
 
     register_jobs(scheduler)
+    install_scheduler_monitor(scheduler)
     scheduler.start()
     logger.info("APScheduler started. Registered jobs: {}", len(scheduler.get_jobs()))
 

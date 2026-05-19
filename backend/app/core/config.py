@@ -31,8 +31,11 @@ class AppSettings(BaseSettings):
     project_name: str = Field(default="Stock Insight", alias="PROJECT_NAME")
     api_v1_prefix: str = Field(default="/api/v1", alias="API_V1_PREFIX")
     host: str = Field(default="0.0.0.0", alias="APP_HOST")
-    port: int = Field(default=18000, ge=0, le=65535, alias="APP_PORT")
+    port: int = Field(default=8101, ge=0, le=65535, alias="APP_PORT")
     reload: bool = Field(default=False, alias="APP_RELOAD")
+    model_name: str | None = Field(default="glm-4.7-flash", alias="LLM_MODEL_NAME")
+    base_url: str | None = Field(default="https://api.z.ai/api/paas/v4/", alias="LLM_BASE_URL")
+    api_key: str | None = Field(default=None, alias="LLM_API_KEY")
 
 
 class StorageSettings(BaseSettings):
@@ -44,7 +47,7 @@ class StorageSettings(BaseSettings):
 class CorsSettings(BaseSettings):
     model_config = BASE_CONFIG
 
-    origins: StringList = Field(default_factory=lambda: ["http://localhost:5173"], alias="CORS_ORIGINS")
+    origins: StringList = Field(default_factory=lambda: ["*"], alias="CORS_ORIGINS")
     allow_credentials: bool = Field(default=True, alias="CORS_ALLOW_CREDENTIALS")
     allow_methods: StringList = Field(default_factory=lambda: ["*"], alias="CORS_ALLOW_METHODS")
     allow_headers: StringList = Field(default_factory=lambda: ["*"], alias="CORS_ALLOW_HEADERS")

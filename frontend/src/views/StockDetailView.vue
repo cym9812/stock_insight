@@ -1,305 +1,169 @@
 <template>
-  <div class="stock-detail animate-fade-in">
-    <header class="detail-header">
-      <div class="stock-title">
-        <h1 class="text-gradient">{{ selectedStock }}</h1>
-        <span class="stock-price" :class="priceChange >= 0 ? 'up' : 'down'">
+  <div class="mx-auto w-full max-w-[1400px]">
+    <PageHeader :title="selectedStock || 'Stock Analysis'">
+      <template #actions>
+        <span :class="['text-lg font-black', priceChange >= 0 ? 'text-emerald-300' : 'text-rose-300']">
           ${{ currentPrice }} ({{ priceChange }}%)
         </span>
-      </div>
-      <div class="selector glass-card">
-        <select v-model="selectedStock">
+        <select v-model="selectedStock" class="h-9 rounded-md border border-input bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-ring">
           <option v-for="s in stocks" :key="s" :value="s">{{ s }}</option>
         </select>
-      </div>
-    </header>
+      </template>
+    </PageHeader>
 
-    <div class="detail-grid">
-      <!-- Main Chart Section -->
-      <section class="glass-card chart-section">
-        <div class="chart-header">
-          <h3>Super K-Line</h3>
-        </div>
-        <div ref="klineRef" class="main-chart"></div>
-      </section>
+    <div class="grid grid-cols-[minmax(0,1fr)_350px] gap-4 max-lg:grid-cols-1">
+      <PanelCard>
+        <template #header><h3 class="m-0 text-sm font-semibold text-foreground">Super K-Line</h3></template>
+        <div ref="klineRef" class="h-[440px] w-full"></div>
+      </PanelCard>
 
-      <!-- Sidebar Analysis -->
-      <aside class="sidebar-grid">
-        <!-- Hexagon/Radar Chart -->
-        <section class="glass-card radar-section">
-          <h3>Multi-dimension Analysis</h3>
-          <div ref="radarRef" class="radar-chart"></div>
-        </section>
+      <aside class="grid gap-4">
+        <PanelCard>
+          <template #header><h3 class="m-0 text-sm font-semibold text-foreground">Multi-dimension Analysis</h3></template>
+          <div ref="radarRef" class="h-[250px] w-full"></div>
+        </PanelCard>
 
-        <!-- AI Summary Panel -->
-        <section class="glass-card ai-summary-section">
-          <div class="ai-header">
-            <span class="ai-icon">✨</span>
-            <h3>AI Insight</h3>
-          </div>
-          <div v-if="loadingAnalysis" class="loading">Generating insights...</div>
-          <div v-else class="ai-content">
-            <p class="summary">{{ analysis.summary }}</p>
-            <div class="risk-alerts">
-              <h4>Risk Alerts</h4>
-              <ul>
+        <PanelCard class="min-h-64">
+          <template #header>
+            <div class="flex items-center gap-2">
+              <Sparkles class="h-4 w-4 text-sky-200" />
+              <h3 class="m-0 text-sm font-semibold text-foreground">AI Insight</h3>
+            </div>
+          </template>
+          <div v-if="loadingAnalysis" class="py-5 text-sm italic text-muted-foreground">Generating insights...</div>
+          <div v-else>
+            <p class="mb-4 text-sm leading-6 text-slate-300">{{ analysis.summary }}</p>
+            <div>
+              <h4 class="mb-2 text-sm font-bold text-rose-300">Risk Alerts</h4>
+              <ul class="m-0 space-y-2 pl-5 text-sm text-muted-foreground">
                 <li v-for="risk in analysis.risks" :key="risk">{{ risk }}</li>
               </ul>
             </div>
           </div>
-        </section>
+        </PanelCard>
       </aside>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, nextTick } from 'vue';
-import * as echarts from 'echarts';
-import { useRoute } from 'vue-router';
-import { getStockAnalysis, getStockBars, getStocks } from '../api/stocks';
-import type { StockAnalysis, StockBar } from '../types/stock';
+import { nextTick, onMounted, ref, watch } from 'vue'
+import { Sparkles } from '@lucide/vue'
+import * as echarts from 'echarts'
+import { useRoute } from 'vue-router'
+import { getStockAnalysis, getStockBars, getStocks } from '@/api/stocks'
+import PageHeader from '@/components/ui/PageHeader.vue'
+import PanelCard from '@/components/ui/PanelCard.vue'
+import { chartCategoryAxis, chartColors, chartGrid, chartTooltip, chartValueAxis } from '@/config/chartTheme'
+import type { StockAnalysis, StockBar } from '@/types/stock'
 
-const route = useRoute();
+const route = useRoute()
 
-const klineRef = ref<HTMLElement | null>(null);
-const radarRef = ref<HTMLElement | null>(null);
+const klineRef = ref<HTMLElement | null>(null)
+const radarRef = ref<HTMLElement | null>(null)
 
-const stocks = ref<string[]>([]);
-const selectedStock = ref<string>((route.params.ticker as string) || '');
-const klineData = ref<StockBar[]>([]);
+const stocks = ref<string[]>([])
+const selectedStock = ref<string>((route.params.ticker as string) || '')
+const klineData = ref<StockBar[]>([])
 const analysis = ref<StockAnalysis>({
   ticker: '',
   radar: { indicators: [], values: [] },
   summary: '',
-  risks: []
-});
-const loadingAnalysis = ref(false);
+  risks: [],
+})
+const loadingAnalysis = ref(false)
 
-const currentPrice = ref(0);
-const priceChange = ref(0);
+const currentPrice = ref(0)
+const priceChange = ref(0)
 
 const initKLine = (data: StockBar[]) => {
-  if (!klineRef.value) return;
-  const chart = echarts.init(klineRef.value);
-  
-  const categoryData = data.map(d => d.trade_time?.split('T')[0] ?? '');
-  const values = data.map(d => [d.open, d.close, d.low, d.high]);
-  
+  if (!klineRef.value) return
+  const chart = echarts.init(klineRef.value)
+
+  const categoryData = data.map(d => d.trade_time?.split('T')[0] ?? '')
+  const values = data.map(d => [d.open, d.close, d.low, d.high])
+
   chart.setOption({
-    tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
-    grid: { left: '5%', right: '5%', bottom: '15%' },
-    xAxis: { type: 'category', data: categoryData, axisLine: { lineStyle: { color: '#475569' } } },
-    yAxis: { scale: true, splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } } },
+    tooltip: { ...chartTooltip, axisPointer: { type: 'cross' } },
+    grid: { ...chartGrid, bottom: 58 },
+    xAxis: { type: 'category', data: categoryData, ...chartCategoryAxis },
+    yAxis: { scale: true, ...chartValueAxis },
     dataZoom: [{ type: 'inside', start: 50, end: 100 }, { type: 'slider', start: 50, end: 100 }],
     series: [
       {
         type: 'candlestick',
         data: values,
-        itemStyle: { color: '#10b981', color0: '#f43f5e', borderColor: '#10b981', borderColor0: '#f43f5e' }
-      }
-    ]
-  });
-};
+        itemStyle: { color: chartColors.up, color0: chartColors.down, borderColor: chartColors.up, borderColor0: chartColors.down },
+      },
+    ],
+  })
+}
 
 const initRadar = (data: StockAnalysis['radar']) => {
-  if (!radarRef.value) return;
-  const chart = echarts.init(radarRef.value);
+  if (!radarRef.value) return
+  const chart = echarts.init(radarRef.value)
   chart.setOption({
     radar: {
       indicator: data.indicators.map((n: string) => ({ name: n, max: 100 })),
       splitArea: { show: false },
-      axisLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } }
+      axisName: { color: chartColors.muted },
+      axisLine: { lineStyle: { color: chartColors.axis } },
+      splitLine: { lineStyle: { color: chartColors.splitLine } },
     },
     series: [{
       type: 'radar',
       data: [{
         value: data.values,
         name: 'Analysis',
-        areaStyle: { color: 'rgba(56, 189, 248, 0.3)' },
-        lineStyle: { color: '#38bdf8' },
-        itemStyle: { color: '#38bdf8' }
-      }]
-    }]
-  });
-};
+        areaStyle: { color: 'rgba(125, 211, 252, 0.18)' },
+        lineStyle: { color: chartColors.accent },
+        itemStyle: { color: chartColors.accent },
+      }],
+    }],
+  })
+}
 
 const fetchData = async () => {
   if (!selectedStock.value) {
-    loadingAnalysis.value = false;
-    return;
+    loadingAnalysis.value = false
+    return
   }
-  loadingAnalysis.value = true;
+  loadingAnalysis.value = true
   try {
     const [klRes, anRes] = await Promise.all([
       getStockBars(selectedStock.value),
-      getStockAnalysis(selectedStock.value)
-    ]);
-    
-    klineData.value = klRes.data;
-    analysis.value = anRes;
-    
+      getStockAnalysis(selectedStock.value),
+    ])
+
+    klineData.value = klRes.data
+    analysis.value = anRes
+
     if (klineData.value.length > 1) {
-      const last = klineData.value[klineData.value.length - 1];
-      const prev = klineData.value[klineData.value.length - 2];
+      const last = klineData.value[klineData.value.length - 1]
+      const prev = klineData.value[klineData.value.length - 2]
       if (last.close !== null && prev.close !== null && prev.close !== 0) {
-        currentPrice.value = last.close;
-        priceChange.value = parseFloat(((last.close - prev.close) / prev.close * 100).toFixed(2));
+        currentPrice.value = last.close
+        priceChange.value = parseFloat((((last.close - prev.close) / prev.close) * 100).toFixed(2))
       }
     }
 
-    await nextTick();
-    initKLine(klineData.value);
-    initRadar(analysis.value.radar);
+    await nextTick()
+    initKLine(klineData.value)
+    initRadar(analysis.value.radar)
   } catch (e) {
-    console.error('Failed to fetch stock detail', e);
+    console.error('Failed to fetch stock detail', e)
   } finally {
-    loadingAnalysis.value = false;
+    loadingAnalysis.value = false
   }
-};
+}
 
 onMounted(async () => {
-  stocks.value = await getStocks();
+  stocks.value = await getStocks()
   if (!selectedStock.value && stocks.value.length > 0) {
-    selectedStock.value = stocks.value[0];
+    selectedStock.value = stocks.value[0]
   }
-  fetchData();
-});
+  fetchData()
+})
 
-watch(selectedStock, fetchData);
+watch(selectedStock, fetchData)
 </script>
-
-<style scoped>
-.stock-detail {
-  padding: 24px;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-.detail-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.stock-title h1 {
-  margin: 0;
-  font-size: 2.5rem;
-  font-weight: 800;
-}
-
-.stock-price {
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-
-.detail-grid {
-  display: grid;
-  grid-template-columns: 1fr 350px;
-  gap: 24px;
-}
-
-.chart-section {
-  padding: 24px;
-}
-
-.chart-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.main-chart {
-  width: 100%;
-  height: 500px;
-}
-
-.sidebar-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.radar-section {
-  padding: 20px;
-}
-
-.radar-chart {
-  width: 100%;
-  height: 250px;
-}
-
-.ai-summary-section {
-  padding: 24px;
-  flex: 1;
-}
-
-.ai-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.ai-icon { font-size: 1.5rem; }
-
-.ai-content .summary {
-  line-height: 1.6;
-  color: var(--text-main);
-  margin-bottom: 20px;
-}
-
-.risk-alerts h4 {
-  color: var(--down-color);
-  margin-bottom: 12px;
-}
-
-.risk-alerts ul {
-  padding-left: 20px;
-  color: var(--text-muted);
-}
-
-.risk-alerts li {
-  margin-bottom: 8px;
-}
-
-.selector {
-  padding: 8px 16px;
-}
-
-.selector select {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: var(--text-main);
-  padding: 8px 16px;
-  border-radius: 8px;
-  outline: none;
-  font-family: inherit;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.selector select option {
-  background: var(--bg-dark);
-  color: var(--text-main);
-}
-
-.loading {
-  color: var(--text-muted);
-  font-style: italic;
-  padding: 20px 0;
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
-}
-
-@media (max-width: 1024px) {
-  .detail-grid {
-    grid-template-columns: 1fr;
-  }
-}
-</style>

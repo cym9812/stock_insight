@@ -92,6 +92,8 @@ if __name__ == "__main__":
     try:
         news = scraper.get_latest_news()
         print(f"成功获取 {len(news)} 条新闻数据！")
+        for i in news:
+            print(i)
 
     except ClsScraperError as e:
         print(f"抓取过程发生异常: {e}")

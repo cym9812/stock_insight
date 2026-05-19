@@ -1,5 +1,6 @@
 import asyncio
 import json
+import time
 
 from app.core.logger import logger
 from app.tasks.news_analysis.cls_telegraph_scraper import ClsTelegraphScraper
@@ -43,13 +44,12 @@ class MarketNewsMonitorJob:
 
         for news in new_items:
             try:
-                logger.info(f"开始分析新闻: {news.news_id} - {news.title}")
+                logger.info(f"开始分析新闻: {news.news_id}")
                 analysis = self.llm_client.analyze(news)
 
                 # 将 Pydantic 业务模型映射为 SQLModel 数据库模型
                 raw_table = NewsItemTable(
                     news_id=news.news_id,
-                    title=news.title,
                     content=news.content,
                     publish_time=news.publish_time,
                     source_url=news.source_url,
@@ -77,6 +77,7 @@ class MarketNewsMonitorJob:
                     f"importance={analysis.importance}, "
                     f"urgency={analysis.urgency}"
                 )
+                time.sleep(1)
             except Exception as e:
                 logger.error(f"处理新闻失败: news_id={news.news_id}, error={e!r}")
 
@@ -89,3 +90,22 @@ async def run_market_news_monitor(
     """
     job = MarketNewsMonitorJob(scraper=scraper, storage=storage, llm_client=llm_client)
     await asyncio.to_thread(job.run_once)
+
+
+if __name__ == "__main__":
+    from sqlmodel import create_engine
+
+    from app.data.layout import get_local_data_layout
+
+    layout = get_local_data_layout()
+    db_path = layout.databases_dir / "news_storage.db"
+
+    # 构建 SQLModel Engine
+    db_url = f"sqlite:///{db_path}"
+    engine = create_engine(db_url)
+
+    scraper = ClsTelegraphScraper()
+    storage = NewsStorage(engine=engine)
+    llm_client = NewsLLMClient()
+    job = MarketNewsMonitorJob(scraper=scraper, storage=storage, llm_client=llm_client)
+    job.run_once()

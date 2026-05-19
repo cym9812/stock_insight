@@ -11,7 +11,6 @@ class NewsItem(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     news_id: int = Field(alias="id")
-    title: str
     content: str
     publish_time: int = Field(alias="ctime")
     source_url: str = Field(alias="shareurl")
@@ -61,20 +60,12 @@ class NewsAnalysis(BaseModel):
     """
 
     news_id: int = Field(description="原始新闻 ID")
-    title: str = Field(description="原始新闻标题")
-
     summary: str = Field(description="一句话概括新闻内容")
-
     event_type: EventType = Field(description="新闻事件类型")
-
     market_impact: ImpactDirection = Field(description="对整体市场的影响方向")
-
     importance: ScoreLevel = Field(description="重要性等级（low/medium/high）")
     urgency: ScoreLevel = Field(description="紧急程度等级（low/medium/high）")
-
     sectors: list[SectorImpact] = Field(description="受影响板块列表")
     companies: list[CompanyImpact] = Field(description="受影响公司列表")
-
     reasoning: str = Field(description="简要分析逻辑")
     confidence: float = Field(description="置信度，范围 0 到 1")
-    need_follow_up: bool = Field(description="是否需要继续跟踪后续新闻")
