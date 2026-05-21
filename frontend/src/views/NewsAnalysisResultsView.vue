@@ -1,18 +1,18 @@
 <template>
   <div class="mx-auto w-full max-w-[1420px]">
     <PageHeader
-      eyebrow="AI Market Intelligence"
-      title="News Impact Radar"
-      subtitle="Fast scan of market-moving news and AI impact signals"
+      eyebrow="AI 市场情报"
+      title="新闻影响雷达"
+      subtitle="快速扫描可能影响市场的新闻与 AI 影响信号"
     >
       <template #actions>
         <div class="flex flex-wrap items-center gap-2">
-          <StatusChip tone="up">Positive {{ impactCounts.positive }}</StatusChip>
-          <StatusChip tone="down">Negative {{ impactCounts.negative }}</StatusChip>
-          <StatusChip tone="neutral">Neutral {{ impactCounts.neutral }}</StatusChip>
-          <StatusChip tone="accent">Pending {{ impactCounts.pending }}</StatusChip>
+          <StatusChip tone="up">利好 {{ impactCounts.positive }}</StatusChip>
+          <StatusChip tone="down">利空 {{ impactCounts.negative }}</StatusChip>
+          <StatusChip tone="neutral">中性 {{ impactCounts.neutral }}</StatusChip>
+          <StatusChip tone="accent">待分析 {{ impactCounts.pending }}</StatusChip>
         </div>
-        <Button :disabled="loading" @click="loadResults">{{ loading ? 'Refreshing' : 'Refresh' }}</Button>
+        <Button :disabled="loading" @click="loadResults">{{ loading ? '刷新中' : '刷新' }}</Button>
       </template>
     </PageHeader>
 
@@ -33,12 +33,12 @@
             {{ tab.label }}
           </button>
         </div>
-        <span class="text-xs font-medium text-muted-foreground">Sorted by importance, urgency, and confidence</span>
+        <span class="text-xs font-medium text-muted-foreground">按重要性、紧急度和置信度排序</span>
       </div>
 
       <div class="grid gap-2">
         <article v-if="!filteredItems.length" class="rounded-lg border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
-          No news analysis results
+          暂无新闻分析结果
         </article>
         <NewsImpactCard v-for="item in filteredItems" :key="item.news_id" :item="item" />
       </div>
@@ -63,10 +63,10 @@ const error = ref('')
 const currentFilter = ref('all')
 
 const tabs = [
-  { label: 'All', value: 'all' },
-  { label: 'Positive', value: 'positive' },
-  { label: 'Negative', value: 'negative' },
-  { label: 'High Priority', value: 'high' },
+  { label: '全部', value: 'all' },
+  { label: '利好', value: 'positive' },
+  { label: '利空', value: 'negative' },
+  { label: '高优先级', value: 'high' },
 ]
 
 const impactCounts = computed(() => ({
@@ -94,8 +94,8 @@ const loadResults = async () => {
     const response = await getNewsAnalysisResults(100)
     items.value = response.items
   } catch (err) {
-    console.error('Failed to load news analysis results', err)
-    error.value = 'Failed to load news analysis results'
+    console.error('加载新闻分析结果失败', err)
+    error.value = '加载新闻分析结果失败'
   } finally {
     loading.value = false
   }

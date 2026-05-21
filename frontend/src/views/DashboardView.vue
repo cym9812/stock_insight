@@ -1,10 +1,10 @@
 <template>
   <div class="mx-auto w-full max-w-[1400px]">
-    <PageHeader title="Market Overview" subtitle="Real-time market sentiment and index performance" />
+    <PageHeader title="市场总览" subtitle="实时市场情绪与指数表现" />
 
     <div class="grid grid-cols-2 gap-4 max-lg:grid-cols-1">
       <PanelCard>
-        <template #header><h3 class="m-0 text-sm font-semibold text-foreground">Market Sentiment</h3></template>
+        <template #header><h3 class="m-0 text-sm font-semibold text-foreground">市场情绪</h3></template>
         <div ref="sentimentGauge" class="h-[230px] w-full"></div>
         <div class="-mt-5 text-center">
           <span :class="['text-xl font-black uppercase', sentiment.label.toLowerCase() === 'fear' ? 'text-rose-300' : 'text-emerald-300']">
@@ -28,7 +28,7 @@
       </div>
 
       <PanelCard class="col-span-2 max-lg:col-span-1">
-        <template #header><h3 class="m-0 text-sm font-semibold text-foreground">Market Heatmap (Sectors)</h3></template>
+        <template #header><h3 class="m-0 text-sm font-semibold text-foreground">市场热力图（行业）</h3></template>
         <div ref="heatmapChart" class="h-[360px] w-full"></div>
       </PanelCard>
     </div>
@@ -48,7 +48,7 @@ const sentimentGauge = ref<HTMLElement | null>(null)
 const heatmapChart = ref<HTMLElement | null>(null)
 const indexChartRefs = ref<Record<string, HTMLElement>>({})
 
-const sentiment = ref<MarketSentiment>({ score: 0, label: 'Neutral', description: '' })
+const sentiment = ref<MarketSentiment>({ score: 0, label: '中性', description: '' })
 const indices = ref<MarketIndex[]>([])
 const sectors = ref<HeatmapItem[]>([])
 

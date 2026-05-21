@@ -1,8 +1,8 @@
 <template>
   <div class="mx-auto w-full max-w-[1400px]">
-    <PageHeader title="News Analysis Task" subtitle="Scheduler registration, next run time, and recent execution records">
+    <PageHeader title="新闻分析任务" subtitle="调度注册状态、下次执行时间与最近运行记录">
       <template #actions>
-        <Button :disabled="loading" @click="loadStatus">{{ loading ? 'Refreshing' : 'Refresh' }}</Button>
+        <Button :disabled="loading" @click="loadStatus">{{ loading ? '刷新中' : '刷新' }}</Button>
       </template>
     </PageHeader>
 
@@ -19,7 +19,7 @@
 
     <PanelCard class="mb-4">
       <template #header>
-        <h3 class="m-0 text-sm font-semibold text-foreground">Task Plan</h3>
+        <h3 class="m-0 text-sm font-semibold text-foreground">任务计划</h3>
         <span class="text-xs font-bold text-sky-200">{{ status?.job_id ?? 'market_news_monitor' }}</span>
       </template>
       <dl class="grid grid-cols-2 gap-4 max-md:grid-cols-1">
@@ -32,23 +32,23 @@
 
     <PanelCard class="overflow-x-auto">
       <template #header>
-        <h3 class="m-0 text-sm font-semibold text-foreground">Recent Runs</h3>
-        <span class="text-xs text-muted-foreground">{{ status?.recent_runs.length ?? 0 }} records</span>
+        <h3 class="m-0 text-sm font-semibold text-foreground">最近执行</h3>
+        <span class="text-xs text-muted-foreground">{{ status?.recent_runs.length ?? 0 }} 条记录</span>
       </template>
       <table class="w-full min-w-[880px] border-collapse text-sm">
         <thead>
           <tr class="border-b border-border text-left text-xs text-muted-foreground">
-            <th class="px-3 py-2 font-semibold">Status</th>
-            <th class="px-3 py-2 font-semibold">Scheduled</th>
-            <th class="px-3 py-2 font-semibold">Started</th>
-            <th class="px-3 py-2 font-semibold">Finished</th>
-            <th class="px-3 py-2 font-semibold">Duration</th>
-            <th class="px-3 py-2 font-semibold">Message</th>
+            <th class="px-3 py-2 font-semibold">状态</th>
+            <th class="px-3 py-2 font-semibold">计划时间</th>
+            <th class="px-3 py-2 font-semibold">开始时间</th>
+            <th class="px-3 py-2 font-semibold">结束时间</th>
+            <th class="px-3 py-2 font-semibold">耗时</th>
+            <th class="px-3 py-2 font-semibold">信息</th>
           </tr>
         </thead>
         <tbody>
           <tr v-if="!status?.recent_runs.length">
-            <td colspan="6" class="px-3 py-10 text-center text-muted-foreground">No execution records yet</td>
+            <td colspan="6" class="px-3 py-10 text-center text-muted-foreground">暂无执行记录</td>
           </tr>
           <tr v-for="run in status?.recent_runs" :key="run.run_id" class="border-b border-border/70 hover:bg-secondary/25">
             <td class="px-3 py-3"><StatusChip :tone="statusTone(run.status)">{{ run.status }}</StatusChip></td>
@@ -84,8 +84,8 @@ const loadStatus = async () => {
   try {
     status.value = await getNewsAnalysisTaskStatus()
   } catch (err) {
-    console.error('Failed to load news analysis task status', err)
-    error.value = 'Failed to load task status'
+    console.error('加载新闻分析任务状态失败', err)
+    error.value = '加载任务状态失败'
   } finally {
     loading.value = false
   }
@@ -126,28 +126,28 @@ const statusColor = (value?: TaskRunStatus | string) => {
 
 const metrics = computed(() => [
   {
-    label: 'Scheduler',
-    value: status.value?.scheduler_running ? 'Running' : 'Stopped',
+    label: '调度器',
+    value: status.value?.scheduler_running ? '运行中' : '已停止',
     className: status.value?.scheduler_running ? 'text-emerald-300' : 'text-rose-300',
   },
   {
-    label: 'Job',
-    value: status.value?.exists ? 'Registered' : 'Missing',
+    label: '任务',
+    value: status.value?.exists ? '已注册' : '缺失',
     className: status.value?.exists ? 'text-emerald-300' : 'text-rose-300',
   },
-  { label: 'Next Run', value: formatDateTime(status.value?.next_run_time), className: 'text-foreground' },
+  { label: '下次执行', value: formatDateTime(status.value?.next_run_time), className: 'text-foreground' },
   {
-    label: 'Last Result',
-    value: status.value?.last_run?.status ?? 'No runs',
+    label: '最近结果',
+    value: status.value?.last_run?.status ?? '暂无',
     className: statusColor(status.value?.last_run?.status),
   },
 ])
 
 const taskDetails = computed(() => [
-  { label: 'Name', value: status.value?.name ?? '-' },
-  { label: 'Trigger', value: status.value?.trigger ?? '-' },
-  { label: 'Last Scheduled', value: formatDateTime(status.value?.last_run?.scheduled_at) },
-  { label: 'Last Duration', value: formatDuration(status.value?.last_run?.duration_seconds) },
+  { label: '名称', value: status.value?.name ?? '-' },
+  { label: '触发器', value: status.value?.trigger ?? '-' },
+  { label: '最近计划时间', value: formatDateTime(status.value?.last_run?.scheduled_at) },
+  { label: '最近耗时', value: formatDuration(status.value?.last_run?.duration_seconds) },
 ])
 
 onMounted(() => {

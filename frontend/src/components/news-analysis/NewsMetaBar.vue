@@ -7,7 +7,7 @@
       {{ item.event_type }}
     </span>
     <span v-if="item.confidence !== null" class="inline-flex h-6 items-center rounded-md border border-border bg-secondary/45 px-2 font-semibold">
-      {{ Math.round(item.confidence * 100) }}% confidence
+      {{ Math.round(item.confidence * 100) }}% 置信度
     </span>
     <a
       v-if="item.source_url"
@@ -16,7 +16,7 @@
       target="_blank"
       rel="noreferrer"
     >
-      Source
+      来源
     </a>
   </div>
 </template>

@@ -1,19 +1,19 @@
 <template>
   <div class="mx-auto w-full max-w-[1400px]">
-    <PageHeader title="Strategy & Screener" subtitle="Signals, recommendations, and factor screening">
+    <PageHeader title="策略与选股" subtitle="信号、推荐与因子筛选">
       <template #actions>
         <div class="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-card p-2">
           <select v-model="filter.market" class="h-9 rounded-md border border-input bg-slate-950/35 px-3 text-sm outline-none focus:ring-2 focus:ring-ring">
-            <option value="all">All Markets</option>
-            <option value="us">US Stocks</option>
-            <option value="cn">A-Share</option>
+            <option value="all">全部市场</option>
+            <option value="us">美股</option>
+            <option value="cn">A 股</option>
           </select>
           <select v-model="filter.winRate" class="h-9 rounded-md border border-input bg-slate-950/35 px-3 text-sm outline-none focus:ring-2 focus:ring-ring">
-            <option value="0">Min Win Rate</option>
+            <option value="0">最低胜率</option>
             <option value="70">> 70%</option>
             <option value="80">> 80%</option>
           </select>
-          <Button>Apply Filters</Button>
+          <Button>应用筛选</Button>
         </div>
       </template>
     </PageHeader>
@@ -22,37 +22,37 @@
       <PanelCard v-for="rec in filteredRecommendations" :key="rec.ticker">
         <div class="mb-3 flex items-center justify-between gap-3">
           <span class="text-xl font-black text-foreground">{{ rec.ticker }}</span>
-          <span :class="['text-xs font-bold', getConfidenceColor(rec.confidence)]">{{ rec.confidence }}% Confidence</span>
+          <span :class="['text-xs font-bold', getConfidenceColor(rec.confidence)]">{{ rec.confidence }}% 置信度</span>
         </div>
         <div :class="['mb-3 text-base font-black uppercase', rec.prediction === 'up' ? 'text-emerald-300' : 'text-rose-300']">
-          {{ rec.prediction === 'up' ? 'Bullish' : 'Bearish' }}
+          {{ rec.prediction === 'up' ? '看多' : '看空' }}
         </div>
         <p class="mb-4 text-sm leading-6 text-muted-foreground">{{ rec.reason }}</p>
         <router-link :to="`/stock/${rec.ticker}`" class="text-sm font-bold text-sky-200 hover:text-sky-100">
-          Deep Dive
+          深度分析
         </router-link>
       </PanelCard>
     </section>
 
     <PanelCard class="mb-4">
       <template #header>
-        <h3 class="m-0 text-sm font-semibold text-foreground">AI Strategy Performance (Backtest)</h3>
-        <span class="text-xs text-muted-foreground">vs. S&P 500 Index</span>
+        <h3 class="m-0 text-sm font-semibold text-foreground">AI 策略表现（回测）</h3>
+        <span class="text-xs text-muted-foreground">对比 S&P 500 指数</span>
       </template>
       <div ref="backtestChart" class="h-[340px] w-full"></div>
     </PanelCard>
 
     <PanelCard class="overflow-x-auto">
-      <template #header><h3 class="m-0 text-sm font-semibold text-foreground">Multi-factor Screener</h3></template>
+      <template #header><h3 class="m-0 text-sm font-semibold text-foreground">多因子选股</h3></template>
       <table class="w-full min-w-[760px] border-collapse text-sm">
         <thead>
           <tr class="border-b border-border text-left text-xs text-muted-foreground">
-            <th class="px-3 py-2 font-semibold">Ticker</th>
-            <th class="px-3 py-2 font-semibold">Signal</th>
-            <th class="px-3 py-2 font-semibold">PE Ratio</th>
-            <th class="px-3 py-2 font-semibold">MACD Status</th>
+            <th class="px-3 py-2 font-semibold">代码</th>
+            <th class="px-3 py-2 font-semibold">信号</th>
+            <th class="px-3 py-2 font-semibold">市盈率（PE）</th>
+            <th class="px-3 py-2 font-semibold">MACD 状态</th>
             <th class="px-3 py-2 font-semibold">RSI</th>
-            <th class="px-3 py-2 font-semibold">Action</th>
+            <th class="px-3 py-2 font-semibold">操作</th>
           </tr>
         </thead>
         <tbody>
@@ -62,7 +62,7 @@
             <td class="px-3 py-3">{{ stock.pe }}</td>
             <td class="px-3 py-3">{{ stock.macd }}</td>
             <td class="px-3 py-3">{{ stock.rsi }}</td>
-            <td class="px-3 py-3"><Button variant="secondary" size="sm">Track</Button></td>
+            <td class="px-3 py-3"><Button variant="secondary" size="sm">跟踪</Button></td>
           </tr>
         </tbody>
       </table>
@@ -109,7 +109,7 @@ const initBacktestChart = (data: BacktestResponse) => {
   const chart = echarts.init(backtestChart.value)
   chart.setOption({
     tooltip: chartTooltip,
-    legend: { data: ['AI Strategy', 'Benchmark'], textStyle: { color: chartColors.text } },
+    legend: { data: ['AI 策略', '基准'], textStyle: { color: chartColors.text } },
     grid: chartGrid,
     xAxis: {
       type: 'category',
@@ -122,7 +122,7 @@ const initBacktestChart = (data: BacktestResponse) => {
     },
     series: [
       {
-        name: 'AI Strategy',
+        name: 'AI 策略',
         type: 'line',
         data: data.returns,
         smooth: true,
@@ -136,7 +136,7 @@ const initBacktestChart = (data: BacktestResponse) => {
         },
       },
       {
-        name: 'Benchmark',
+        name: '基准',
         type: 'line',
         data: data.benchmark,
         smooth: true,
@@ -157,7 +157,7 @@ onMounted(async () => {
     backtestData.value = backtestRes
     initBacktestChart(backtestData.value)
   } catch (e) {
-    console.error('Failed to load strategy data', e)
+    console.error('加载策略数据失败', e)
   }
 })
 </script>

@@ -10,7 +10,7 @@
       <strong class="text-[11px] font-black uppercase tracking-wide">{{ ui.label }}</strong>
     </div>
     <div class="flex flex-col items-center justify-center gap-1 px-2 py-2 text-center">
-      <span class="block text-[9px] font-bold uppercase tracking-wide text-muted-foreground">Priority</span>
+      <span class="block text-[9px] font-bold uppercase tracking-wide text-muted-foreground">优先级</span>
       <strong class="text-xl font-black leading-none text-foreground">{{ score ?? '--' }}</strong>
     </div>
   </aside>

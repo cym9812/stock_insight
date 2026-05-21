@@ -13,19 +13,19 @@ const route = useRoute()
 
 const navSections = [
   {
-    label: 'Markets',
+    label: '市场',
     items: [
-      { to: '/dashboard', label: 'Market Overview', icon: LayoutDashboard, active: (path: string) => path === '/dashboard' },
-      { to: '/strategy', label: 'Strategy Center', icon: Radar, active: (path: string) => path === '/strategy' },
-      { to: '/stock', label: 'Stock Analysis', icon: ChartCandlestick, active: (path: string) => path.startsWith('/stock') },
-      { to: '/portfolio', label: 'Portfolio', icon: BriefcaseBusiness, active: (path: string) => path === '/portfolio' },
+      { to: '/dashboard', label: '市场总览', icon: LayoutDashboard, active: (path: string) => path === '/dashboard' },
+      { to: '/strategy', label: '策略中心', icon: Radar, active: (path: string) => path === '/strategy' },
+      { to: '/stock', label: '个股分析', icon: ChartCandlestick, active: (path: string) => path.startsWith('/stock') },
+      { to: '/portfolio', label: '投资组合', icon: BriefcaseBusiness, active: (path: string) => path === '/portfolio' },
     ],
   },
   {
-    label: 'Automation',
+    label: '自动化',
     items: [
-      { to: '/tasks/news-analysis', label: 'News Tasks', icon: Bot, active: (path: string) => path.startsWith('/tasks') },
-      { to: '/news-analysis/results', label: 'News Radar', icon: Newspaper, active: (path: string) => path.startsWith('/news-analysis') },
+      { to: '/tasks/news-analysis', label: '新闻任务', icon: Bot, active: (path: string) => path.startsWith('/tasks') },
+      { to: '/news-analysis/results', label: '新闻雷达', icon: Newspaper, active: (path: string) => path.startsWith('/news-analysis') },
     ],
   },
 ]
@@ -39,8 +39,8 @@ const navSections = [
           SI
         </div>
         <div class="min-w-0">
-          <h1 class="m-0 text-sm font-bold text-foreground">Stock Insight</h1>
-          <span class="block text-xs font-medium text-muted-foreground">Quant workspace</span>
+          <h1 class="m-0 text-sm font-bold text-foreground">匠制科技</h1>
+          <span class="block text-xs font-medium text-muted-foreground">量化工作台</span>
         </div>
       </div>
 
@@ -66,8 +66,8 @@ const navSections = [
         <div class="flex items-center gap-3 rounded-lg bg-secondary/45 p-2">
           <div class="flex h-8 w-8 items-center justify-center rounded-md bg-slate-700 text-xs font-bold">SI</div>
           <div>
-            <div class="text-xs font-semibold text-foreground">Local Workspace</div>
-            <div class="text-xs text-emerald-300">Ready</div>
+            <div class="text-xs font-semibold text-foreground">本地工作区</div>
+            <div class="text-xs text-emerald-300">就绪</div>
           </div>
         </div>
       </div>

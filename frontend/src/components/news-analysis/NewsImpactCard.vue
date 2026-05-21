@@ -16,7 +16,7 @@
         <summary class="block cursor-pointer list-none">
           <span class="line-clamp-1 text-[15px] font-bold leading-6 text-foreground group-open:line-clamp-none">
             {{ item.content }}
-            <span class="ml-1 text-xs font-semibold text-sky-200/80 group-open:hidden">Show full news</span>
+            <span class="ml-1 text-xs font-semibold text-sky-200/80 group-open:hidden">展开全文</span>
           </span>
         </summary>
       </details>
@@ -52,10 +52,10 @@ const score = computed(() => getPriorityScore(props.item))
 const displayImpact = computed(() => getDisplayImpact(props.item))
 const ui = computed(() => getImpactUi(displayImpact.value))
 const aiLine = computed(() => {
-  if (props.item.analysis_status === 'failed') return 'AI analysis unavailable after retries'
+  if (props.item.analysis_status === 'failed') return 'AI 分析多次重试后仍失败'
   if (props.item.analysis_status === 'pending' || props.item.analysis_status === 'analyzing') {
-    return 'AI analysis pending'
+    return 'AI 分析进行中'
   }
-  return props.item.summary || 'No summary available'
+  return props.item.summary || '暂无摘要'
 })
 </script>

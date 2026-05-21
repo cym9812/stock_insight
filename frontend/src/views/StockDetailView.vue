@@ -1,6 +1,6 @@
 <template>
   <div class="mx-auto w-full max-w-[1400px]">
-    <PageHeader :title="selectedStock || 'Stock Analysis'">
+    <PageHeader :title="selectedStock || '个股分析'">
       <template #actions>
         <span :class="['text-lg font-black', priceChange >= 0 ? 'text-emerald-300' : 'text-rose-300']">
           ${{ currentPrice }} ({{ priceChange }}%)
@@ -13,13 +13,13 @@
 
     <div class="grid grid-cols-[minmax(0,1fr)_350px] gap-4 max-lg:grid-cols-1">
       <PanelCard>
-        <template #header><h3 class="m-0 text-sm font-semibold text-foreground">Super K-Line</h3></template>
+        <template #header><h3 class="m-0 text-sm font-semibold text-foreground">超级 K 线</h3></template>
         <div ref="klineRef" class="h-[440px] w-full"></div>
       </PanelCard>
 
       <aside class="grid gap-4">
         <PanelCard>
-          <template #header><h3 class="m-0 text-sm font-semibold text-foreground">Multi-dimension Analysis</h3></template>
+          <template #header><h3 class="m-0 text-sm font-semibold text-foreground">多维分析</h3></template>
           <div ref="radarRef" class="h-[250px] w-full"></div>
         </PanelCard>
 
@@ -27,14 +27,14 @@
           <template #header>
             <div class="flex items-center gap-2">
               <Sparkles class="h-4 w-4 text-sky-200" />
-              <h3 class="m-0 text-sm font-semibold text-foreground">AI Insight</h3>
+              <h3 class="m-0 text-sm font-semibold text-foreground">AI 洞察</h3>
             </div>
           </template>
-          <div v-if="loadingAnalysis" class="py-5 text-sm italic text-muted-foreground">Generating insights...</div>
+          <div v-if="loadingAnalysis" class="py-5 text-sm italic text-muted-foreground">正在生成洞察...</div>
           <div v-else>
             <p class="mb-4 text-sm leading-6 text-slate-300">{{ analysis.summary }}</p>
             <div>
-              <h4 class="mb-2 text-sm font-bold text-rose-300">Risk Alerts</h4>
+              <h4 class="mb-2 text-sm font-bold text-rose-300">风险提示</h4>
               <ul class="m-0 space-y-2 pl-5 text-sm text-muted-foreground">
                 <li v-for="risk in analysis.risks" :key="risk">{{ risk }}</li>
               </ul>
