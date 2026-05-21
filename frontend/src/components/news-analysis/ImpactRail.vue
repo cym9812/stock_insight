@@ -11,7 +11,7 @@
     </div>
     <div class="flex flex-col items-center justify-center gap-1 px-2 py-2 text-center">
       <span class="block text-[9px] font-bold uppercase tracking-wide text-muted-foreground">Priority</span>
-      <strong class="text-xl font-black leading-none text-foreground">{{ score }}</strong>
+      <strong class="text-xl font-black leading-none text-foreground">{{ score ?? '--' }}</strong>
     </div>
   </aside>
 </template>
@@ -21,8 +21,8 @@ import { computed } from 'vue'
 import { getImpactUi } from './newsAnalysisUi'
 
 const props = defineProps<{
-  impact: string
-  score: number
+  impact: string | null
+  score: number | null
 }>()
 
 const ui = computed(() => getImpactUi(props.impact))

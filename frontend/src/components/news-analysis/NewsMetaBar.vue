@@ -3,10 +3,10 @@
     <span class="inline-flex h-6 items-center rounded-md border border-border bg-secondary/45 px-2 font-semibold">
       {{ formatUnixSeconds(item.publish_time) }}
     </span>
-    <span class="inline-flex h-6 items-center rounded-md border border-border bg-secondary/45 px-2 font-semibold">
+    <span v-if="item.event_type" class="inline-flex h-6 items-center rounded-md border border-border bg-secondary/45 px-2 font-semibold">
       {{ item.event_type }}
     </span>
-    <span class="inline-flex h-6 items-center rounded-md border border-border bg-secondary/45 px-2 font-semibold">
+    <span v-if="item.confidence !== null" class="inline-flex h-6 items-center rounded-md border border-border bg-secondary/45 px-2 font-semibold">
       {{ Math.round(item.confidence * 100) }}% confidence
     </span>
     <a

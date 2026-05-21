@@ -1,6 +1,16 @@
 import type { NewsAnalysisResultItem } from '../../types/newsAnalysis'
 
-export function getImpactUi(impact: string) {
+export function isAnalyzed(item: NewsAnalysisResultItem) {
+  return item.analysis_status === 'analyzed'
+}
+
+export function getDisplayImpact(item: NewsAnalysisResultItem) {
+  if (item.analysis_status === 'failed') return 'failed'
+  if (item.analysis_status === 'pending' || item.analysis_status === 'analyzing') return 'pending'
+  return item.market_impact ?? 'neutral'
+}
+
+export function getImpactUi(impact: string | null) {
   if (impact === 'positive') {
     return {
       tone: 'up',
@@ -25,6 +35,30 @@ export function getImpactUi(impact: string) {
       cardClass: 'border-l-rose-300',
     }
   }
+  if (impact === 'pending') {
+    return {
+      tone: 'neutral',
+      label: 'Pending',
+      railClass: 'border-sky-300/25 bg-sky-300/8',
+      signalClass: 'bg-sky-300/10 text-sky-100',
+      dotClass: 'bg-sky-300',
+      textClass: 'text-sky-100',
+      chipClass: 'border-sky-300/25 bg-sky-300/10 text-sky-100',
+      cardClass: 'border-l-sky-400/70',
+    }
+  }
+  if (impact === 'failed') {
+    return {
+      tone: 'down',
+      label: 'AI Failed',
+      railClass: 'border-amber-300/25 bg-amber-300/8',
+      signalClass: 'bg-amber-300/10 text-amber-100',
+      dotClass: 'bg-amber-300',
+      textClass: 'text-amber-100',
+      chipClass: 'border-amber-300/25 bg-amber-300/10 text-amber-100',
+      cardClass: 'border-l-amber-300/70',
+    }
+  }
   return {
     tone: 'neutral',
     label: 'Neutral',
@@ -38,6 +72,9 @@ export function getImpactUi(impact: string) {
 }
 
 export function getPriorityScore(item: NewsAnalysisResultItem) {
+  if (!isAnalyzed(item) || item.importance === null || item.urgency === null || item.confidence === null) {
+    return null
+  }
   const weight: Record<string, number> = { high: 3, medium: 2, low: 1 }
   const importance = weight[item.importance] ?? 1
   const urgency = weight[item.urgency] ?? 1

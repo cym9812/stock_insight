@@ -10,6 +10,7 @@
           <StatusChip tone="up">Positive {{ impactCounts.positive }}</StatusChip>
           <StatusChip tone="down">Negative {{ impactCounts.negative }}</StatusChip>
           <StatusChip tone="neutral">Neutral {{ impactCounts.neutral }}</StatusChip>
+          <StatusChip tone="accent">Pending {{ impactCounts.pending }}</StatusChip>
         </div>
         <Button :disabled="loading" @click="loadResults">{{ loading ? 'Refreshing' : 'Refresh' }}</Button>
       </template>
@@ -49,7 +50,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { getNewsAnalysisResults } from '@/api/newsAnalysis'
 import NewsImpactCard from '@/components/news-analysis/NewsImpactCard.vue'
-import { getPriorityScore } from '@/components/news-analysis/newsAnalysisUi'
+import { getPriorityScore, isAnalyzed } from '@/components/news-analysis/newsAnalysisUi'
 import Button from '@/components/ui/Button.vue'
 import PageHeader from '@/components/ui/PageHeader.vue'
 import PanelCard from '@/components/ui/PanelCard.vue'
@@ -69,19 +70,21 @@ const tabs = [
 ]
 
 const impactCounts = computed(() => ({
-  positive: items.value.filter(item => item.market_impact === 'positive').length,
-  negative: items.value.filter(item => item.market_impact === 'negative').length,
-  neutral: items.value.filter(item => !['positive', 'negative'].includes(item.market_impact)).length,
+  positive: items.value.filter(item => isAnalyzed(item) && item.market_impact === 'positive').length,
+  negative: items.value.filter(item => isAnalyzed(item) && item.market_impact === 'negative').length,
+  neutral: items.value.filter(item => isAnalyzed(item) && !['positive', 'negative'].includes(item.market_impact ?? '')).length,
+  pending: items.value.filter(item => item.analysis_status === 'pending' || item.analysis_status === 'analyzing').length,
 }))
 
 const filteredItems = computed(() => {
   return [...items.value]
     .filter(item => {
       if (currentFilter.value === 'all') return true
-      if (currentFilter.value === 'high') return item.importance === 'high' || item.urgency === 'high'
+      if (currentFilter.value === 'high') return isAnalyzed(item) && (item.importance === 'high' || item.urgency === 'high')
+      if (!isAnalyzed(item)) return false
       return item.market_impact === currentFilter.value
     })
-    .sort((a, b) => getPriorityScore(b) - getPriorityScore(a))
+    .sort((a, b) => (getPriorityScore(b) ?? -1) - (getPriorityScore(a) ?? -1))
 })
 
 const loadResults = async () => {

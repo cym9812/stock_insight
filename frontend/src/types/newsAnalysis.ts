@@ -1,5 +1,6 @@
 export type NewsImpactDirection = 'positive' | 'negative' | 'neutral' | 'uncertain'
 export type NewsScoreLevel = 'low' | 'medium' | 'high'
+export type NewsAnalysisStatus = 'pending' | 'analyzing' | 'analyzed' | 'failed'
 
 export interface NewsImpactItem {
   name: string
@@ -14,15 +15,18 @@ export interface NewsAnalysisResultItem {
   source_url: string
   publish_time: number
   created_at: string
-  summary: string
-  event_type: string
-  market_impact: NewsImpactDirection | string
-  importance: NewsScoreLevel | string
-  urgency: NewsScoreLevel | string
+  analysis_status: NewsAnalysisStatus | string
+  analysis_retry_count: number
+  last_analysis_error: string | null
+  summary: string | null
+  event_type: string | null
+  market_impact: NewsImpactDirection | string | null
+  importance: NewsScoreLevel | string | null
+  urgency: NewsScoreLevel | string | null
   sectors: NewsImpactItem[]
   companies: NewsImpactItem[]
-  reasoning: string
-  confidence: number
+  reasoning: string | null
+  confidence: number | null
 }
 
 export interface NewsAnalysisResultsResponse {

@@ -5,7 +5,7 @@
       ui.cardClass,
     ]"
   >
-    <ImpactRail :impact="item.market_impact" :score="score" />
+    <ImpactRail :impact="displayImpact" :score="score" />
 
     <section class="grid min-w-0 gap-2">
       <div class="flex min-w-0 items-center justify-between gap-3">
@@ -28,10 +28,10 @@
         >
           AI
         </span>
-        <span class="align-middle">{{ item.summary || 'No summary available' }}</span>
+        <span class="align-middle">{{ aiLine }}</span>
       </p>
 
-      <AnalysisDrawer :item="item" />
+      <AnalysisDrawer v-if="isAnalyzed(item)" :item="item" />
     </section>
   </article>
 </template>
@@ -42,12 +42,20 @@ import type { NewsAnalysisResultItem } from '@/types/newsAnalysis'
 import AnalysisDrawer from './AnalysisDrawer.vue'
 import ImpactRail from './ImpactRail.vue'
 import NewsMetaBar from './NewsMetaBar.vue'
-import { getImpactUi, getPriorityScore, isExpandableNews } from './newsAnalysisUi'
+import { getDisplayImpact, getImpactUi, getPriorityScore, isAnalyzed, isExpandableNews } from './newsAnalysisUi'
 
 const props = defineProps<{
   item: NewsAnalysisResultItem
 }>()
 
 const score = computed(() => getPriorityScore(props.item))
-const ui = computed(() => getImpactUi(props.item.market_impact))
+const displayImpact = computed(() => getDisplayImpact(props.item))
+const ui = computed(() => getImpactUi(displayImpact.value))
+const aiLine = computed(() => {
+  if (props.item.analysis_status === 'failed') return 'AI analysis unavailable after retries'
+  if (props.item.analysis_status === 'pending' || props.item.analysis_status === 'analyzing') {
+    return 'AI analysis pending'
+  }
+  return props.item.summary || 'No summary available'
+})
 </script>

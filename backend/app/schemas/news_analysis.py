@@ -16,15 +16,18 @@ class NewsAnalysisResultItem(BaseModel):
     source_url: str
     publish_time: int
     created_at: datetime
-    summary: str
-    event_type: str
-    market_impact: str
-    importance: str
-    urgency: str
+    analysis_status: str
+    analysis_retry_count: int
+    last_analysis_error: str | None = None
+    summary: str | None = None
+    event_type: str | None = None
+    market_impact: str | None = None
+    importance: str | None = None
+    urgency: str | None = None
     sectors: list[NewsImpactItem]
     companies: list[NewsImpactItem]
-    reasoning: str
-    confidence: float
+    reasoning: str | None = None
+    confidence: float | None = None
 
 
 class NewsAnalysisResultsResponse(BaseModel):
