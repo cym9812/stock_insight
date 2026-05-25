@@ -8,32 +8,34 @@
       <div>
         <div class="mb-2 text-[11px] font-black uppercase text-muted-foreground">行业</div>
         <div class="flex flex-wrap gap-2">
-          <span
+          <MetricChip
             v-for="sector in item.sectors"
             :key="`${item.news_id}-sector-${sector.name}`"
-            :class="['inline-flex min-h-7 items-center rounded-full border px-2.5 text-xs font-semibold', getImpactUi(sector.impact).chipClass]"
+            :tone="getImpactTone(sector.impact)"
+            class="rounded-full px-2.5"
           >
             {{ sector.name }}
-          </span>
-          <span v-if="!item.sectors.length" class="inline-flex min-h-7 items-center rounded-full border border-border bg-secondary/40 px-2.5 text-xs text-muted-foreground">
+          </MetricChip>
+          <MetricChip v-if="!item.sectors.length" class="rounded-full px-2.5">
             无
-          </span>
+          </MetricChip>
         </div>
       </div>
       <div>
         <div class="mb-2 text-[11px] font-black uppercase text-muted-foreground">公司</div>
         <div class="flex flex-wrap gap-2">
-          <span
+          <MetricChip
             v-for="company in item.companies"
             :key="`${item.news_id}-company-${company.name}`"
-            :class="['inline-flex min-h-7 max-w-56 items-center gap-1.5 rounded-md border px-2.5 text-xs font-semibold', getImpactUi(company.impact).chipClass]"
+            :tone="getImpactTone(company.impact)"
+            class="max-w-56 gap-1.5 px-2.5"
           >
             {{ company.name }}
             <small v-if="company.stock_code" class="text-muted-foreground">{{ company.stock_code }}</small>
-          </span>
-          <span v-if="!item.companies.length" class="inline-flex min-h-7 items-center rounded-md border border-border bg-secondary/40 px-2.5 text-xs text-muted-foreground">
+          </MetricChip>
+          <MetricChip v-if="!item.companies.length" class="px-2.5">
             无
-          </span>
+          </MetricChip>
         </div>
       </div>
     </div>
@@ -47,9 +49,17 @@
 
 <script setup lang="ts">
 import type { NewsAnalysisResultItem } from '../../types/newsAnalysis'
-import { getImpactUi } from './newsAnalysisUi'
+import MetricChip from '@/components/ui/MetricChip.vue'
 
 defineProps<{
   item: NewsAnalysisResultItem
 }>()
+
+const getImpactTone = (impact: string | null) => {
+  if (impact === 'positive') return 'up'
+  if (impact === 'negative') return 'down'
+  if (impact === 'failed') return 'warning'
+  if (impact === 'pending') return 'accent'
+  return 'neutral'
+}
 </script>

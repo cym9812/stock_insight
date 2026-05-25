@@ -21,19 +21,12 @@
     </div>
 
     <PanelCard class="border-border/70 bg-card/60 p-3 shadow-none">
-      <div class="mb-3 flex items-center justify-between gap-3 rounded-md border border-border/70 bg-slate-950/20 p-2 max-md:flex-col max-md:items-start">
-        <div class="inline-flex rounded-md bg-slate-950/35 p-1">
-          <button
-            v-for="tab in tabs"
-            :key="tab.value"
-            class="h-7 rounded px-3 text-xs font-bold text-muted-foreground transition-colors hover:text-foreground"
-            :class="currentFilter === tab.value && 'bg-primary text-primary-foreground'"
-            @click="currentFilter = tab.value"
-          >
-            {{ tab.label }}
-          </button>
+      <div class="mb-3 flex items-center justify-between gap-3 rounded-md border border-border/70 bg-slate-950/20 p-2 max-md:flex-col max-md:items-stretch">
+        <FilterTabs v-model="currentFilter" :options="tabs" />
+        <div class="flex shrink-0 items-center justify-end gap-3 max-sm:flex-wrap max-sm:justify-start">
+          <SelectField v-model="sortBy" label="排序字段" :options="sortByOptions" />
+          <SelectField v-model="sortDirection" label="方向" :options="sortDirectionOptions" />
         </div>
-        <span class="text-xs font-medium text-muted-foreground">按重要性、紧急度和置信度排序</span>
       </div>
 
       <div class="grid gap-2">
@@ -52,8 +45,10 @@ import { getNewsAnalysisResults } from '@/api/newsAnalysis'
 import NewsImpactCard from '@/components/news-analysis/NewsImpactCard.vue'
 import { getPriorityScore, isAnalyzed } from '@/components/news-analysis/newsAnalysisUi'
 import Button from '@/components/ui/Button.vue'
+import FilterTabs from '@/components/ui/FilterTabs.vue'
 import PageHeader from '@/components/ui/PageHeader.vue'
 import PanelCard from '@/components/ui/PanelCard.vue'
+import SelectField from '@/components/ui/SelectField.vue'
 import StatusChip from '@/components/ui/StatusChip.vue'
 import type { NewsAnalysisResultItem } from '@/types/newsAnalysis'
 
@@ -61,12 +56,27 @@ const items = ref<NewsAnalysisResultItem[]>([])
 const loading = ref(false)
 const error = ref('')
 const currentFilter = ref('all')
+const sortBy = ref<SortBy>('priority')
+const sortDirection = ref<SortDirection>('desc')
+
+type SortBy = 'priority' | 'publish_time'
+type SortDirection = 'desc' | 'asc'
 
 const tabs = [
   { label: '全部', value: 'all' },
   { label: '利好', value: 'positive' },
   { label: '利空', value: 'negative' },
   { label: '高优先级', value: 'high' },
+]
+
+const sortByOptions: { label: string, value: SortBy }[] = [
+  { label: '优先级', value: 'priority' },
+  { label: '发布时间', value: 'publish_time' },
+]
+
+const sortDirectionOptions: { label: string, value: SortDirection }[] = [
+  { label: '降序', value: 'desc' },
+  { label: '升序', value: 'asc' },
 ]
 
 const impactCounts = computed(() => ({
@@ -84,8 +94,25 @@ const filteredItems = computed(() => {
       if (!isAnalyzed(item)) return false
       return item.market_impact === currentFilter.value
     })
-    .sort((a, b) => (getPriorityScore(b) ?? -1) - (getPriorityScore(a) ?? -1))
+    .sort((a, b) => sortNewsItems(a, b, sortBy.value, sortDirection.value))
 })
+
+const sortNewsItems = (
+  a: NewsAnalysisResultItem,
+  b: NewsAnalysisResultItem,
+  by: SortBy,
+  direction: SortDirection,
+) => {
+  const directionMultiplier = direction === 'desc' ? -1 : 1
+
+  if (by === 'publish_time') {
+    return (a.publish_time - b.publish_time) * directionMultiplier
+  }
+
+  const priorityDiff = ((getPriorityScore(a) ?? -1) - (getPriorityScore(b) ?? -1)) * directionMultiplier
+  if (priorityDiff !== 0) return priorityDiff
+  return b.publish_time - a.publish_time
+}
 
 const loadResults = async () => {
   loading.value = true

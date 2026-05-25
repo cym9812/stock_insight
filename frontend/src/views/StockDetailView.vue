@@ -5,9 +5,7 @@
         <span :class="['text-lg font-black', priceChange >= 0 ? 'text-emerald-300' : 'text-rose-300']">
           ${{ currentPrice }} ({{ priceChange }}%)
         </span>
-        <select v-model="selectedStock" class="h-9 rounded-md border border-input bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-ring">
-          <option v-for="s in stocks" :key="s" :value="s">{{ s }}</option>
-        </select>
+        <SelectField v-model="selectedStock" label="代码" :options="stockOptions" />
       </template>
     </PageHeader>
 
@@ -47,13 +45,14 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { Sparkles } from '@lucide/vue'
 import * as echarts from 'echarts'
 import { useRoute } from 'vue-router'
 import { getStockAnalysis, getStockBars, getStocks } from '@/api/stocks'
 import PageHeader from '@/components/ui/PageHeader.vue'
 import PanelCard from '@/components/ui/PanelCard.vue'
+import SelectField from '@/components/ui/SelectField.vue'
 import { chartCategoryAxis, chartColors, chartGrid, chartTooltip, chartValueAxis } from '@/config/chartTheme'
 import type { StockAnalysis, StockBar } from '@/types/stock'
 
@@ -63,6 +62,7 @@ const klineRef = ref<HTMLElement | null>(null)
 const radarRef = ref<HTMLElement | null>(null)
 
 const stocks = ref<string[]>([])
+const stockOptions = computed(() => stocks.value.map(stock => ({ label: stock, value: stock })))
 const selectedStock = ref<string>((route.params.ticker as string) || '')
 const klineData = ref<StockBar[]>([])
 const analysis = ref<StockAnalysis>({

@@ -3,16 +3,8 @@
     <PageHeader title="策略与选股" subtitle="信号、推荐与因子筛选">
       <template #actions>
         <div class="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-card p-2">
-          <select v-model="filter.market" class="h-9 rounded-md border border-input bg-slate-950/35 px-3 text-sm outline-none focus:ring-2 focus:ring-ring">
-            <option value="all">全部市场</option>
-            <option value="us">美股</option>
-            <option value="cn">A 股</option>
-          </select>
-          <select v-model="filter.winRate" class="h-9 rounded-md border border-input bg-slate-950/35 px-3 text-sm outline-none focus:ring-2 focus:ring-ring">
-            <option value="0">最低胜率</option>
-            <option value="70">> 70%</option>
-            <option value="80">> 80%</option>
-          </select>
+          <SelectField v-model="filter.market" label="市场" :options="marketOptions" />
+          <SelectField v-model="filter.winRate" label="胜率" :options="winRateOptions" />
           <Button>应用筛选</Button>
         </div>
       </template>
@@ -58,7 +50,7 @@
         <tbody>
           <tr v-for="stock in screenerData" :key="stock.ticker" class="border-b border-border/70 hover:bg-secondary/25">
             <td class="px-3 py-3 font-bold">{{ stock.ticker }}</td>
-            <td class="px-3 py-3"><span :class="signalClass(stock.signalClass)">{{ stock.signal }}</span></td>
+            <td class="px-3 py-3"><MetricChip :tone="signalTone(stock.signalClass)" class="font-bold uppercase">{{ stock.signal }}</MetricChip></td>
             <td class="px-3 py-3">{{ stock.pe }}</td>
             <td class="px-3 py-3">{{ stock.macd }}</td>
             <td class="px-3 py-3">{{ stock.rsi }}</td>
@@ -75,8 +67,10 @@ import { computed, onMounted, ref } from 'vue'
 import * as echarts from 'echarts'
 import { getRecommendations, getStrategyBacktest } from '@/api/strategies'
 import Button from '@/components/ui/Button.vue'
+import MetricChip from '@/components/ui/MetricChip.vue'
 import PageHeader from '@/components/ui/PageHeader.vue'
 import PanelCard from '@/components/ui/PanelCard.vue'
+import SelectField from '@/components/ui/SelectField.vue'
 import { chartCategoryAxis, chartColors, chartGrid, chartTooltip, chartValueAxis } from '@/config/chartTheme'
 import type { BacktestResponse, Recommendation } from '@/types/strategy'
 
@@ -84,6 +78,18 @@ const backtestChart = ref<HTMLElement | null>(null)
 const recommendations = ref<Recommendation[]>([])
 const backtestData = ref<BacktestResponse | null>(null)
 const filter = ref({ market: 'all', winRate: '0' })
+
+const marketOptions = [
+  { label: '全部市场', value: 'all' },
+  { label: '美股', value: 'us' },
+  { label: 'A 股', value: 'cn' },
+]
+
+const winRateOptions = [
+  { label: '最低胜率', value: '0' },
+  { label: '> 70%', value: '70' },
+  { label: '> 80%', value: '80' },
+]
 
 const screenerData = ref<Array<{ ticker: string; signal: string; signalClass: string; pe: string; macd: string; rsi: string }>>([])
 
@@ -97,11 +103,10 @@ const getConfidenceColor = (conf: number) => {
   return 'text-rose-300'
 }
 
-const signalClass = (value: string) => {
-  const base = 'inline-flex h-6 items-center rounded-md border px-2 text-xs font-bold uppercase'
-  if (value === 'buy' || value === 'strong-buy') return `${base} border-emerald-400/25 bg-emerald-400/10 text-emerald-200`
-  if (value === 'sell') return `${base} border-rose-400/25 bg-rose-400/10 text-rose-200`
-  return `${base} border-amber-300/25 bg-amber-300/10 text-amber-200`
+const signalTone = (value: string) => {
+  if (value === 'buy' || value === 'strong-buy') return 'up'
+  if (value === 'sell') return 'down'
+  return 'warning'
 }
 
 const initBacktestChart = (data: BacktestResponse) => {

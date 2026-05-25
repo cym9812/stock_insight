@@ -36,7 +36,7 @@
               <td class="px-3 py-3 font-bold">{{ item.ticker }}</td>
               <td class="px-3 py-3">${{ item.price }}</td>
               <td :class="['px-3 py-3 font-bold', item.change.startsWith('+') ? 'text-emerald-300' : 'text-rose-300']">{{ item.change }}</td>
-              <td class="px-3 py-3"><span :class="adviceClass(item.suggestion)">{{ item.suggestion }}</span></td>
+              <td class="px-3 py-3"><MetricChip :tone="adviceTone(item.suggestion)" class="font-bold uppercase">{{ item.suggestion }}</MetricChip></td>
               <td class="px-3 py-3">
                 <router-link :to="`/stock/${item.ticker}`" class="text-sm font-bold text-sky-200 hover:text-sky-100">查看</router-link>
               </td>
@@ -78,6 +78,7 @@
 import { onMounted, ref } from 'vue'
 import { getPortfolioOverview } from '@/api/portfolio'
 import Button from '@/components/ui/Button.vue'
+import MetricChip from '@/components/ui/MetricChip.vue'
 import PageHeader from '@/components/ui/PageHeader.vue'
 import PanelCard from '@/components/ui/PanelCard.vue'
 import type { HoldingItem, WatchlistItem } from '@/types/portfolio'
@@ -85,12 +86,11 @@ import type { HoldingItem, WatchlistItem } from '@/types/portfolio'
 const watchlist = ref<WatchlistItem[]>([])
 const holdings = ref<HoldingItem[]>([])
 
-const adviceClass = (value: string) => {
-  const base = 'inline-flex h-6 items-center rounded-md border px-2 text-xs font-bold uppercase'
+const adviceTone = (value: string) => {
   const normalized = value.toLowerCase()
-  if (normalized === 'buy') return `${base} border-emerald-400/25 bg-emerald-400/10 text-emerald-200`
-  if (normalized === 'sell') return `${base} border-rose-400/25 bg-rose-400/10 text-rose-200`
-  return `${base} border-sky-300/25 bg-sky-300/10 text-sky-200`
+  if (normalized === 'buy') return 'up'
+  if (normalized === 'sell') return 'down'
+  return 'accent'
 }
 
 onMounted(async () => {
