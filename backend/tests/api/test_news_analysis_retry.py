@@ -195,3 +195,58 @@ def make_ai_table(news_id: int) -> AiAnalysisTable:
         reasoning=analysis.reasoning,
         confidence=analysis.confidence,
     )
+
+
+def test_list_results_pagination_and_date_filtering(tmp_path: Path):
+    storage = make_storage(tmp_path)
+
+    # Insert some news with specific publish times
+    # 2026-05-27 10:00:00 UTC+8 -> 1779933600
+    # 2026-05-26 10:00:00 UTC+8 -> 1779847200
+    # 2026-05-25 10:00:00 UTC+8 -> 1779760800
+    n1 = NewsItemTable(news_id=10, content="news 10", publish_time=1779933600, source_url="url10")
+    n2 = NewsItemTable(news_id=11, content="news 11", publish_time=1779847200, source_url="url11")
+    n3 = NewsItemTable(news_id=12, content="news 12", publish_time=1779760800, source_url="url12")
+
+    storage.upsert_raw_items([n1, n2, n3])
+
+    # Save some AI analysis for sorting/filtering
+    storage.save_analysis_success(AiAnalysisTable(
+        news_id=10, summary="sum10", event_type="其他", market_impact="positive",
+        importance="high", urgency="medium", sectors_json="[]", companies_json="[]",
+        reasoning="r10", confidence=0.8
+    ))
+    storage.save_analysis_success(AiAnalysisTable(
+        news_id=11, summary="sum11", event_type="其他", market_impact="negative",
+        importance="low", urgency="low", sectors_json="[]", companies_json="[]",
+        reasoning="r11", confidence=0.9
+    ))
+
+    service = NewsAnalysisService(db_path=tmp_path / "news_storage.db")
+
+    # 1. Test date range filtering
+    res = service.list_results(start_date="2026-05-26", end_date="2026-05-27")
+    assert len(res.items) == 2
+    assert {item.news_id for item in res.items} == {11, 12}
+    assert res.stats.negative == 1
+    assert res.stats.pending == 1
+    assert res.stats.positive == 0
+
+
+
+    # 2. Test pagination
+    res_page1 = service.list_results(page=1, page_size=1)
+    assert len(res_page1.items) == 1
+    assert res_page1.total_count == 3
+    assert res_page1.total_pages == 3
+
+
+    # 3. Test filter type (positive)
+    res_pos = service.list_results(filter_type="positive")
+    assert len(res_pos.items) == 1
+    assert res_pos.items[0].news_id == 10
+
+    # 4. Test priority sorting
+    res_sorted = service.list_results(sort_by="priority", sort_dir="desc")
+    assert [item.news_id for item in res_sorted.items] == [10, 11, 12]
+

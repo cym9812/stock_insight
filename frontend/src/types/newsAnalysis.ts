@@ -29,6 +29,22 @@ export interface NewsAnalysisResultItem {
   confidence: number | null
 }
 
+export interface NewsAnalysisStats {
+  positive: number
+  negative: number
+  neutral: number
+  pending: number
+  failed: number
+}
+
 export interface NewsAnalysisResultsResponse {
   items: NewsAnalysisResultItem[]
+  total_count: number
+  page: number
+  page_size: number
+  total_pages: number
+  stats: NewsAnalysisStats
 }
+
+
+
